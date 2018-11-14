@@ -1,5 +1,12 @@
-#ifndef _AD9854DDS_H_
-#define _AD9854DDS_H_
+/*
+ * AD9854.h
+ *
+ *  Created on: 2018Äê11ÔÂ15ÈÕ
+ *      Author: Admin
+ */
+
+#ifndef AD9854_H_
+#define AD9854_H_
 #ifndef uchar
 #define uchar unsigned char
 #endif
@@ -9,115 +16,114 @@
 #ifndef uint
 #define uint unsigned int
 #endif
-//extern uchar FreqWord[6];				 //6ä¸ªå­—èŠ‚é¢‘ç‡æ§åˆ¶å­—
-//**********************ä»¥ä¸‹ä¸ºç³»ç»Ÿæ—¶é’Ÿä»¥åŠå…¶ç›¸å…³å˜é‡è®¾ç½®**************************
- 
-/* 
-      æ­¤å¤„æ ¹æ®è‡ªå·±çš„éœ€è¦è®¾ç½®ç³»ç»Ÿæ—¶é’Ÿä»¥åŠä¸å…¶ç›¸å…³çš„å› å­ï¼Œä¸€æ¬¡éœ€ä¸”åªéœ€å¼€å¯ä¸€ä¸ª   
-      CLK_Setä¸ºæ—¶é’Ÿå€é¢‘è®¾ç½®ï¼Œå¯è®¾ç½®4~20å€å€é¢‘ï¼Œä½†æœ€å¤§ä¸èƒ½è¶…è¿‡300MHZ
-      Freq_mult_ulongå’ŒFreq_mult_doulleå‡ä¸º2çš„48æ¬¡æ–¹é™¤ä»¥ç³»ç»Ÿæ—¶é’Ÿï¼Œä¸€ä¸ªä¸ºé•¿æ•´å½¢ï¼Œä¸€ä¸ªä¸ºåŒç²¾åº¦å‹
+//extern uchar FreqWord[6];              //6¸ö×Ö½ÚÆµÂÊ¿ØÖÆ×Ö
+//**********************ÒÔÏÂÎªÏµÍ³Ê±ÖÓÒÔ¼°ÆäÏà¹Ø±äÁ¿ÉèÖÃ**************************
+
+/*
+      ´Ë´¦¸ù¾İ×Ô¼ºµÄĞèÒªÉèÖÃÏµÍ³Ê±ÖÓÒÔ¼°ÓëÆäÏà¹ØµÄÒò×Ó£¬Ò»´ÎĞèÇÒÖ»Ğè¿ªÆôÒ»¸ö
+      CLK_SetÎªÊ±ÖÓ±¶ÆµÉèÖÃ£¬¿ÉÉèÖÃ4~20±¶±¶Æµ£¬µ«×î´ó²»ÄÜ³¬¹ı300MHZ
+      Freq_mult_ulongºÍFreq_mult_doulle¾ùÎª2µÄ48´Î·½³ıÒÔÏµÍ³Ê±ÖÓ£¬Ò»¸öÎª³¤ÕûĞÎ£¬Ò»¸öÎªË«¾«¶ÈĞÍ
 */
- 
+
 /*
 #define      CLK_Set            4
 const ulong  Freq_mult_ulong  = 3518437;
 const double Freq_mult_doulle = 3518437.2088832;
 */
- 
+
 /*
 #define      CLK_Set            5
 const ulong  Freq_mult_ulong  = 2814750;
 const double Freq_mult_doulle = 2814749.76710656;
 */
- 
+
 /*
 #define      CLK_Set            6
 const ulong  Freq_mult_ulong  = 2345625;
 const double Freq_mult_doulle = 2345624.80592213;
 */
- 
+
 /*
 #define      CLK_Set            7
 const ulong  Freq_mult_ulong  = 2010536;
 const double Freq_mult_doulle = 2010535.54793326;
 */
- 
+
 /*
 #define      CLK_Set            8
 const ulong  Freq_mult_ulong  = 1759219;
 const double Freq_mult_doulle = 1759218.6044416;
 */
- 
+
 /*
 #define      CLK_Set            9
 const ulong  Freq_mult_ulong  = 1563750;
 const double Freq_mult_doulle = 1563749.87061476;
 */
- 
+
 /*
 #define      CLK_Set            10
 const ulong  Freq_mult_ulong  = 1407375;
 const double Freq_mult_doulle = 1407374.88355328;
 */
- 
+
 /*
 #define      CLK_Set            11
 const ulong  Freq_mult_ulong  = 1279432;
 const double Freq_mult_doulle = 1279431.712321164;
 */
- 
+
 /*
 #define      CLK_Set            12
 const ulong  Freq_mult_ulong  = 1172812;
 const double Freq_mult_doulle = 1172812.402961067;
 */
- 
+
 /*
 #define      CLK_Set            13
 const ulong  Freq_mult_ulong  = 1082596;
 const double Freq_mult_doulle = 1082596.064271754;
 */
- 
- 
+
+
 #define      CLK_Set            14
 //extern ulong  Freq_mult_ulong  = 1005268;
 //extern double Freq_mult_doulle = 1005267.773966629;
- 
- 
+
+
 /*
 #define      CLK_Set            15
 const ulong  Freq_mult_ulong  = 938250;
 const double Freq_mult_doulle = 938249.9223688533;
 */
-//**************************ä¿®æ”¹ç¡¬ä»¶æ—¶è¦ä¿®æ”¹çš„éƒ¨åˆ†********************************
- 
+//**************************ĞŞ¸ÄÓ²¼şÊ±ÒªĞŞ¸ÄµÄ²¿·Ö********************************
+
 #define AD9854_DataBus P3OUT
 #define AD9854_AdrBus  P2OUT
-#define DIROUT_AD9854_DataBus  P3DIR = 0XFF //æ•°æ®çº¿IOå£è®¾ä¸ºè¾“å‡º
-#define DIROUT_AD9854_AdrBus   P2DIR = 0XFF//åœ°å€çº¿IOå£è®¾ä¸ºè¾“å‡º
+#define DIROUT_AD9854_DataBus  P3DIR = 0XFF //Êı¾İÏßIO¿ÚÉèÎªÊä³ö
+#define DIROUT_AD9854_AdrBus   P2DIR = 0XFF//µØÖ·ÏßIO¿ÚÉèÎªÊä³ö
 #define DIROUT_RD    P4DIR |= BIT4;
 #define DIROUT_WR    P4DIR |= BIT5;
 #define DIROUT_UDCLK  P4DIR |= BIT6;
 #define DIROUT_RST  P4DIR |= BIT7;
-#define CLR_9854RD   P4OUT &= ~BIT4;   //AD9854è¯»ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+#define CLR_9854RD   P4OUT &= ~BIT4;   //AD9854¶ÁÊ¹ÄÜ£¬µÍÓĞĞ§
 #define SET_9854RD   P4OUT |= BIT4;
-#define CLR_9854WR   P4OUT &= ~BIT5;   //AD9854å†™ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+#define CLR_9854WR   P4OUT &= ~BIT5;   //AD9854Ğ´Ê¹ÄÜ£¬µÍÓĞĞ§
 #define SET_9854WR   P4OUT |= BIT5;
-#define CLR_9854UDCLK   P4OUT &= ~BIT6;   //æ›´æ–°æ—¶é’Ÿ
+#define CLR_9854UDCLK   P4OUT &= ~BIT6;   //¸üĞÂÊ±ÖÓ
 #define SET_9854UDCLK   P4OUT |= BIT6;
-#define CLR_9854RST   P4OUT &= ~BIT7;   //å¤ä½ä¿¡å·
+#define CLR_9854RST   P4OUT &= ~BIT7;   //¸´Î»ĞÅºÅ
 #define SET_9854RST   P4OUT |= BIT7;
-//**************************ä»¥ä¸‹éƒ¨åˆ†ä¸ºå‡½æ•°å®šä¹‰********************************
- 
-void AD9854_WR_Byte(uchar addr,uchar dat);	  
-void AD9854_Init(void);						  
-void Freq_convert(long Freq);	         	  
-void AD9854_SetSine(ulong Freq,uint Shape);	  
-void Freq_double_convert(double Freq);		  
-void AD9854_SetSine_double(double Freq,uint Shape);				
-#endif
---------------------- 
-ä½œè€…ï¼šNWAFU_lzh 
-æ¥æºï¼šCSDN 
-åŸæ–‡ï¼šhttps://blog.csdn.net/wzz110011/article/details/78757266 
-ç‰ˆæƒå£°æ˜ï¼šæœ¬æ–‡ä¸ºåšä¸»åŸåˆ›æ–‡ç« ï¼Œè½¬è½½è¯·é™„ä¸Šåšæ–‡é“¾æ¥ï¼
+//**************************ÒÔÏÂ²¿·ÖÎªº¯Êı¶¨Òå********************************
+
+void AD9854_WR_Byte(uchar addr,uchar dat);
+void AD9854_Init(void);
+void Freq_convert(long Freq);
+void AD9854_SetSine(ulong Freq,uint Shape);
+void Freq_double_convert(double Freq);
+void AD9854_SetSine_double(double Freq,uint Shape);
+
+
+
+
+#endif /* AD9854_H_ */
