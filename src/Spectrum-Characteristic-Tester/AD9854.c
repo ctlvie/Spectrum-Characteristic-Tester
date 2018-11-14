@@ -1,5 +1,5 @@
-#include<msp430x14x.h>
-#include"ad9854.h"
+#include<msp430f5529.h>
+#include"AD9854.h"
 ulong  Freq_mult_ulong  = 1005268;
 double Freq_mult_doulle = 1005267.773966629;
 uchar FreqWord[6];               //6个字节频率控制字
@@ -17,17 +17,17 @@ uchar FreqWord[6];               //6个字节频率控制字
 //====================================================================================
 void AD9854_Init(void)
 {
-        DIROUT_AD9854_DataBus;
-        DIROUT_AD9854_AdrBus;
-        DIROUT_RD;
-        DIROUT_WR;
-        DIROUT_RST;
-        DIROUT_UDCLK;
+    DIROUT_AD9854_DataBus;
+    DIROUT_AD9854_AdrBus;
+    DIROUT_RD;
+    DIROUT_WR;
+    DIROUT_RST;
+    DIROUT_UDCLK;
     SET_9854WR;//将读、写控制端口设为无效
-        SET_9854RD;
-        CLR_9854UDCLK;
-        SET_9854RST;                 //复位AD9854
-        CLR_9854RST;
+    SET_9854RD;
+    CLR_9854UDCLK;
+    SET_9854RST;                 //复位AD9854
+    CLR_9854RST;
 
     AD9854_WR_Byte(0x1d,0x10);      //关闭比较器
     AD9854_WR_Byte(0x1e,CLK_Set);      //设置系统时钟倍频
@@ -35,7 +35,7 @@ void AD9854_Init(void)
     AD9854_WR_Byte(0x20,0x60);     //设置为可调节幅度，取消插值补偿
 
     SET_9854UDCLK;                     //更新AD9854输出
-        CLR_9854UDCLK;
+    CLR_9854UDCLK;
 }
 //====================================================================================
 //函数名称:void Freq_convert(long Freq)

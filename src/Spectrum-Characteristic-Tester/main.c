@@ -1,4 +1,4 @@
-#include<msp430x14x.h>
+#include<msp430f5529.h>
 #include"AD9854.h"
 #define uint  unsigned int
 #define uchar unsigned char

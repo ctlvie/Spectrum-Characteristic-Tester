@@ -98,22 +98,22 @@ const double Freq_mult_doulle = 938249.9223688533;
 */
 //**************************修改硬件时要修改的部分********************************
 
-#define AD9854_DataBus P3OUT
-#define AD9854_AdrBus  P2OUT
-#define DIROUT_AD9854_DataBus  P3DIR = 0XFF //数据线IO口设为输出
-#define DIROUT_AD9854_AdrBus   P2DIR = 0XFF//地址线IO口设为输出
-#define DIROUT_RD    P4DIR |= BIT4;
-#define DIROUT_WR    P4DIR |= BIT5;
-#define DIROUT_UDCLK  P4DIR |= BIT6;
-#define DIROUT_RST  P4DIR |= BIT7;
-#define CLR_9854RD   P4OUT &= ~BIT4;   //AD9854读使能，低有效
-#define SET_9854RD   P4OUT |= BIT4;
-#define CLR_9854WR   P4OUT &= ~BIT5;   //AD9854写使能，低有效
-#define SET_9854WR   P4OUT |= BIT5;
-#define CLR_9854UDCLK   P4OUT &= ~BIT6;   //更新时钟
-#define SET_9854UDCLK   P4OUT |= BIT6;
-#define CLR_9854RST   P4OUT &= ~BIT7;   //复位信号
-#define SET_9854RST   P4OUT |= BIT7;
+#define AD9854_DataBus              P3OUT             //P3BIT0 ~ BIT7 为数据总线, 对应 D0 ~ D7
+#define AD9854_AdrBus               P2OUT             //P2BIT0 ~ BIT7 为地址总线, 对应 A0 ~ A5
+#define DIROUT_AD9854_DataBus       P3DIR = 0xff      //数据线IO口设为输出
+#define DIROUT_AD9854_AdrBus        P2DIR = 0xff      //地址线IO口设为输出
+#define DIROUT_RD                   P4DIR |= BIT4;    //P4.4 -> RD
+#define DIROUT_WR                   P4DIR |= BIT5;    //P4.5 -> WR
+#define DIROUT_UDCLK                P4DIR |= BIT6;    //P4.6 -> UCLK
+#define DIROUT_RST                  P4DIR |= BIT7;    //P4.7 -> RST
+#define CLR_9854RD                  P4OUT &= ~BIT4;   //RD使能(低有效)
+#define SET_9854RD                  P4OUT |= BIT4;
+#define CLR_9854WR                  P4OUT &= ~BIT5;   //WR使能(低有效)
+#define SET_9854WR                  P4OUT |= BIT5;
+#define CLR_9854UDCLK               P4OUT &= ~BIT6;   //更新时钟
+#define SET_9854UDCLK               P4OUT |= BIT6;
+#define CLR_9854RST                 P4OUT &= ~BIT7;   //复位信号
+#define SET_9854RST                 P4OUT |= BIT7;
 //**************************以下部分为函数定义********************************
 
 void AD9854_WR_Byte(uchar addr,uchar dat);
