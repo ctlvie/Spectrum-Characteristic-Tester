@@ -28,18 +28,15 @@ uchar virKey = 99;
   uchar arrayKey[40];
   int arrayNum = 0;
 
+
 main(void) {
   WDTCTL = WDTPW + WDTHOLD;
   uchar tempKey;
 
 
-  while(1){
-    tempKey = keyscan();
-    if(tempKey != 0){
-      virKey = tempKey;
-      arrayKey[arrayNum] = tempKey;
-      arrayNum ++ ;
-    }
+  while(1) {
+    arrayKey[arrayNum] = getKeyValue();
+    arrayNum ++ ;
   }
 }
 

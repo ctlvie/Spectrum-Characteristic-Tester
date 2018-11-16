@@ -1,14 +1,14 @@
 /*=======================================================
-Author				:				ctlvie
+Author				  :				ctlvie
 Email Address		:				ctlvie@gmail.com
-Filename			:				Keyboad.c
-Date				:				2018-11-14
+Filename			  :				Keyboad.c
+Date				    :				2018-11-14
 Description			:				键盘扫描程序
 
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
-181114		ctlvie		1.0			Initial Version
+181114		ctlvie		1.0			基本实现键盘扫描与数字输入
 ========================================================*/
 
 #include "Keyboard.h"
@@ -17,8 +17,17 @@ int keylock = 0;
 int key_buff;   //存储上一次按下的键值
 int flag = 0;
 uchar key;      //存储实时的按键信息, 无键按下时为 0
- 
-uchar keyscan(void)
+int NullCnt = 0;        //记录没有键按下的查询次数
+int ButtonDownCnt = 0;  //记录有按键按下的查询次数
+
+
+//-------------------------------------------------
+//Name:         keyScan(void)
+//Description:  键盘扫描(行扫描法)
+//Input:        无
+//Output:       按键位置坐标，无键按下时返回 0 
+//-------------------------------------------------
+uchar keyScan(void)
 {
 
     flag=0;
@@ -34,7 +43,7 @@ uchar keyscan(void)
       if(temp != 0b11110000)    // 说明高四位有低电平输入
       {
           tbuff = temp;
-         DELAY_KEYBOARD_MS(15);
+         DELAY_KEYBOARD_MS(PARA_DEBOUNCE);
           temp = IO_KEYBOARD_IN & 0b11110000;
 
         if(temp != 0b11110000 && temp == tbuff)
@@ -51,8 +60,6 @@ uchar keyscan(void)
               case  0b01110000: key=44; break;
               default : key = 00;break;
             }
-            flag++;
-            if(flag > 40) return 0 ;
             key_buff = key;
             return key;
             }
@@ -68,7 +75,7 @@ uchar keyscan(void)
    if(temp != 0b11110000)    // 说明高四位有低电平输入
    {
        tbuff = temp;
-      DELAY_KEYBOARD_MS(15);
+      DELAY_KEYBOARD_MS(PARA_DEBOUNCE);
        temp = IO_KEYBOARD_IN& 0b11110000;
 
      if(temp != 0b11110000 && temp == tbuff)
@@ -85,8 +92,6 @@ uchar keyscan(void)
            case  0b01110000: key=34; break;
            default : key = 00;break;
          }
-         flag++;
-         if(flag > 60) return 0 ;
          key_buff = key;
          return key;
          }
@@ -101,7 +106,7 @@ uchar keyscan(void)
       if(temp != 0b11110000)    // 说明高四位有低电平输入
       {
           tbuff = temp;
-          DELAY_KEYBOARD_MS(15);
+          DELAY_KEYBOARD_MS(PARA_DEBOUNCE);
          temp = IO_KEYBOARD_IN& 0b11110000;
         if(temp != 0b11110000 && temp == tbuff)
         {
@@ -117,8 +122,6 @@ uchar keyscan(void)
               case  0b01110000: key=24; break;
               default : key = 00;break;
             }
-            flag++;
-            if(flag > 60) return 0 ;
             key_buff = key;
             return key ;
             }
@@ -132,7 +135,7 @@ uchar keyscan(void)
          if(temp != 0b11110000)    // 说明高四位有低电平输入
          {
              tbuff = temp;
-             DELAY_KEYBOARD_MS(15);
+             DELAY_KEYBOARD_MS(PARA_DEBOUNCE);
             temp = IO_KEYBOARD_IN & 0b11110000;
            if(temp != 0b11110000 && temp == tbuff)
            {
@@ -148,8 +151,6 @@ uchar keyscan(void)
                  case  0b01110000: key=14; break;
                  default : key = 00;break;
                }
-               flag++;
-               if(flag > 60) return 0 ;
                key_buff = key;
                return key;
               }
@@ -163,4 +164,55 @@ uchar keyscan(void)
     return 0;
 
 
+}
+
+//-------------------------------------------------
+//Name:         getKeyCdnt(void)
+//Description:  等待，直至有键按下，并获取按键坐标 (长按仅记录一次)
+//Input:        无
+//Output:       按键位置坐标，无键按下时返回 0 
+//-------------------------------------------------          
+uchar getKeyCdnt(void) {
+  uchar KeyCdnt;
+  NullCnt = 0;
+  //查询到一定次数的键盘为空 
+  do {
+    KeyCdnt = keyScan();
+    if(KeyCdnt == 0) {
+      NullCnt ++;
+    }
+    else {
+      NullCnt = 0;
+    }
+  }while(NullCnt < PARA_WAITFORBUTTON);
+  //允许按键按下，之后只要有按键为非零值即可认为是正常操作
+  do {
+    KeyCdnt = keyScan();
+  }while(KeyCdnt == 0);
+  ButtonDownCnt ++;
+  return KeyCdnt;
+}
+
+//-------------------------------------------------
+//Name:         getKeyValue(void)
+//Description:  将已有的按键坐标转换为键值，并屏蔽无用键值
+//Input:        无
+//Output:       有效范围内的键值 
+//------------------------------------------------- 
+uchar getKeyValue(void) {
+  uchar KeyValue;
+  do {
+    KeyValue = getKeyCdnt();
+  }while ( (KeyValue == 14) ||(KeyValue == 24) ||(KeyValue == 34) ||(KeyValue == 44)
+          ||(KeyValue == 41) ||(KeyValue == 43) ||(KeyValue == 44) ); //屏蔽不需要的键值
+  if (KeyValue == 11) return '1';  
+  else if (KeyValue == 12) return '2';
+  else if (KeyValue == 13) return '3';
+  else if (KeyValue == 21) return '4';
+  else if (KeyValue == 22) return '5';
+  else if (KeyValue == 23) return '6';
+  else if (KeyValue == 31) return '7';
+  else if (KeyValue == 32) return '8';
+  else if (KeyValue == 33) return '9';
+  else return '0';
 }
