@@ -23,7 +23,7 @@ void AD9854_Init(void)
     DIROUT_WR;
     DIROUT_RST;
     DIROUT_UDCLK;
-    SET_9854WR;//将读、写控制端口设为无效
+    SET_9854WR;                  //将读、写控制端口设为无效
     SET_9854RD;
     CLR_9854UDCLK;
     SET_9854RST;                 //复位AD9854

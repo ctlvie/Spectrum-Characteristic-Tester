@@ -1,5 +1,21 @@
+/*=======================================================
+Author              :               ctlvie
+Email Address       :               ctlvie@gmail.com
+Filename            :               main.c
+Date                :               2018-11-14
+Description         :               
+
+Modification History:
+Date        By          Version     Description
+----------------------------------------------------------
+181114      ctlvie      1.0         Initial Version
+========================================================*/
+
 #include<msp430f5529.h>
+
 #include"AD9854.h"
+#include"Keyboard.h"
+
 #define uint  unsigned int
 #define uchar unsigned char
 #define ulong unsigned long
@@ -8,6 +24,29 @@
 void DelayXms(unsigned int i);
 //extern uchar FreqWord[6];
 
+uchar virKey = 99;
+  uchar arrayKey[40];
+  int arrayNum = 0;
+
+main(void) {
+  WDTCTL = WDTPW + WDTHOLD;
+  uchar tempKey;
+
+
+  while(1){
+    tempKey = keyscan();
+    if(tempKey != 0){
+      virKey = tempKey;
+      arrayKey[arrayNum] = tempKey;
+      arrayNum ++ ;
+    }
+  }
+}
+
+
+
+
+/* AD9854≤‚ ‘”√main∫Ø ˝
 int main( void )
 {
 
@@ -34,3 +73,4 @@ void DelayXms(unsigned int i){
     }
 
 }
+*/
