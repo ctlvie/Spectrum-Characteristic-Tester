@@ -15,6 +15,7 @@ Date        By          Version     Description
 
 #include"AD9854.h"
 #include"Keyboard.h"
+#include"LCD12864.h"
 
 #define uint  unsigned int
 #define uchar unsigned char
@@ -29,16 +30,18 @@ uchar virKey = 99;
   int arrayNum = 0;
 
 extern uchar CorpInf[];
+extern uchar LCD_BUFF[];
 
 void main( void )
 {
 	
 	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
 	initLCD();
-  
+  //LCD_clearAll();
 	while(1)
 	{
-      LCS_clearAll();	                
+      LCD_drawDots(3,5,1);
+      LCD_disPic(LCD_BUFF);
   }
 	
 }

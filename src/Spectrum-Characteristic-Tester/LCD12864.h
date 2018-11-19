@@ -34,6 +34,7 @@ Date		By			Version		Description
 
 #define IO_LCD_DIR      P6DIR
 #define IO_LCD_OUT      P6OUT
+#define IO_LCD_IN       P6IN
 #define IO_LCD_BIT_CS   BIT0
 #define IO_LCD_BIT_SID  BIT1
 #define IO_LCD_BIT_SCLK BIT2
@@ -51,12 +52,15 @@ Date		By			Version		Description
 void DelayUs2x(unsigned char t);
 void DELAY_LCD_MS(unsigned char t);
 void SendByte(unsigned char zdata);
+uchar ReadByte(void);
 void WriteCommand(unsigned char cmdcode);
 void WriteData(unsigned char Dispdata);
-void LCS_clearAll(void);
+void LCD_clearAll(void);
 void LCD_disString(unsigned int x,unsigned int y,unsigned char* s);
 void LCD_disGBStr(unsigned char *CorpInf);
+void LCD_disPic(uchar *xc_PicArea);
+void LCD_disBuff(uchar *xc_PicArea);
+void LCD_drawDots(int x_pos, int y_pos,uint color);
 void initLCD();
-
 
 #endif /* LCD12864_H_ */
