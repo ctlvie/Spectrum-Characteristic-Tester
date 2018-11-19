@@ -45,12 +45,18 @@ Date		By			Version		Description
 #define SCLK1   IO_LCD_OUT |=   IO_LCD_BIT_SCLK
 #define SCLK0   IO_LCD_OUT &=~  IO_LCD_BIT_SCLK
 
+#define  uchar unsigned char
+#define  uint unsigned int
+
 void DelayUs2x(unsigned char t);
 void DELAY_LCD_MS(unsigned char t);
 void SendByte(unsigned char zdata);
 void WriteCommand(unsigned char cmdcode);
 void WriteData(unsigned char Dispdata);
-void DisplayString(unsigned int x,unsigned int y,unsigned char* s);
+void LCS_clearAll(void);
+void LCD_disString(unsigned int x,unsigned int y,unsigned char* s);
+void LCD_disGBStr(unsigned char *CorpInf);
 void initLCD();
+
 
 #endif /* LCD12864_H_ */

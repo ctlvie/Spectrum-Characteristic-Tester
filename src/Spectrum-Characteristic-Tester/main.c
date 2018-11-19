@@ -28,17 +28,17 @@ uchar virKey = 99;
   uchar arrayKey[40];
   int arrayNum = 0;
 
+extern uchar CorpInf[];
 
 void main( void )
 {
 	
 	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
 	initLCD();
+  
 	while(1)
 	{
-	
-       DisplayString(1,1,"speed");   		
-                
+      LCS_clearAll();	                
   }
 	
 }

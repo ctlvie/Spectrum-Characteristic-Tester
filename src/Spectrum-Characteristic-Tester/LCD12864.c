@@ -8,11 +8,18 @@ Description			  :				12864液晶屏驱动
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
-181119		ctlvie		1.0			
+181119		ctlvie		1.0			字符、汉字显示和清屏函数
 ========================================================*/
 #include<msp430f5529.h>
 #include"LCD12864.h"
  
+uchar CorpInf[]=
+{
+	"频谱特性测试"
+	"Tester"
+	""
+	"123.58Mhz"
+};
 
 void DelayUs2x(unsigned char t)
 {   
@@ -29,8 +36,6 @@ void DELAY_LCD_MS(unsigned char t)
 	 DelayUs2x(245);
  }
 }
- 
-			
  
 void SendByte(unsigned char zdata)
 {
@@ -71,7 +76,26 @@ void WriteData(unsigned char Dispdata)
 	CS0;
 }
  
-void DisplayString(unsigned int x,unsigned int y,unsigned char* s)
+void initLCD()
+{
+    IO_LCD_DIR = 0xFF;
+    IO_LCD_OUT = 0x00;
+	DELAY_LCD_MS(200);
+	WriteCommand(0x30);  //功能设定：基本指令集
+	DELAY_LCD_MS(20);
+	WriteCommand(0x0c);  //显示状态：整体显示，游标关
+	DELAY_LCD_MS(20);
+	WriteCommand(0x01);  //清空显示
+	DELAY_LCD_MS(200);
+}
+ 
+ void LCS_clearAll(void)
+ {
+     WriteCommand(0x01);
+     DELAY_LCD_MS(100);
+ }
+  
+void LCD_disString(unsigned int x,unsigned int y,unsigned char* s)
 {
 	 switch(y)
      {
@@ -88,17 +112,28 @@ void DisplayString(unsigned int x,unsigned int y,unsigned char* s)
       DelayUs2x(50);
    }
 }
- 
-void initLCD()
+
+ void LCD_disGBStr(uchar *CorpInf)
 {
-    IO_LCD_DIR = 0xFF;
-    IO_LCD_OUT = 0x00;
-	DELAY_LCD_MS(200);
-	WriteCommand(0x30);  //功能设定：基本指令集
+	uchar uc_GBCnt;
+
+	WriteCommand(0x30); 	//DL=1:8-BIT interface
+	WriteCommand(0x30); 	//RE=0:basic instruction
+	WriteCommand(0x0C); 	//Display OFF,Cursor OFF,Cursor position blink OFF
+
+	WriteCommand(0x80);
+	for (uc_GBCnt=0;uc_GBCnt<16;uc_GBCnt++)
+	{
+		WriteData(CorpInf[2 * uc_GBCnt]);
+		WriteData(CorpInf[2 * uc_GBCnt + 1]);
+	};
+
+	WriteCommand(0x90);
+	for (uc_GBCnt=0;uc_GBCnt<16;uc_GBCnt++)
+	{
+		WriteData(CorpInf[2 * uc_GBCnt + 32]);
+		WriteData(CorpInf[2 * uc_GBCnt + 33]);
+	};
+
 	DELAY_LCD_MS(20);
-	WriteCommand(0x0c);  //显示状态：整体显示，游标关
-	DELAY_LCD_MS(20);
-	WriteCommand(0x01);  //清空显示
-	DELAY_LCD_MS(200);
 }
- 
