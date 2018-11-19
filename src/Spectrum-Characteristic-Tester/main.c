@@ -29,6 +29,22 @@ uchar virKey = 99;
   int arrayNum = 0;
 
 
+void main( void )
+{
+	
+	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+	initLCD();
+	while(1)
+	{
+	
+       DisplayString(1,1,"speed");   		
+                
+  }
+	
+}
+
+
+/*Keyboard测试用main函数
 main(void) {
   WDTCTL = WDTPW + WDTHOLD;
   uchar tempKey;
@@ -39,7 +55,7 @@ main(void) {
     arrayNum ++ ;
   }
 }
-
+*/
 
 
 
