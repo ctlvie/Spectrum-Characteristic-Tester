@@ -16,6 +16,7 @@ Date        By          Version     Description
 #include"AD9854.h"
 #include"Keyboard.h"
 #include"LCD12864.h"
+#include"ADS1115.h"
 
 #define uint  unsigned int
 #define uchar unsigned char
@@ -31,7 +32,20 @@ uchar virKey = 99;
 
 extern uchar LCD_ChineseBuff[];
 extern uchar LCD_GraphBuff[];
+float ADCResult = 0;
+int t = 0;
+void main( void )
+{
+	
+	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+  while(1){
+      ADCResult = getADCValue();
+  }
+	
+}
 
+
+/*LCD测试用main函数
 void main( void )
 {
 	
@@ -45,7 +59,7 @@ void main( void )
   }
 	
 }
-
+*/
 
 /*Keyboard测试用main函数
 main(void) {
