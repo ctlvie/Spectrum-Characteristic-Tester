@@ -12,7 +12,8 @@ Date        By          Version     Description
 ========================================================*/
 
 #include<msp430f5529.h>
-
+#include<stdio.h>
+#include"FormatConvert.h"
 #include"AD9854.h"
 #include"Keyboard.h"
 #include"LCD12864.h"
@@ -34,32 +35,42 @@ extern uchar LCD_ChineseBuff[];
 extern uchar LCD_GraphBuff[];
 float ADCResult = 0;
 int t = 0;
-void main( void )
+
+
+void testADC(void)
 {
-	
-	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-  while(1){
-      ADCResult = getADCValue();
+  unsigned char TEST_ADCValue[8];
+  WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+  initLCD();
+  LCD_clearCommand();
+  initADC(0);
+  while(1)
+  { 
+    ADCResult = getADCValue();
+    convertFloattoCharArray(TEST_ADCValue,8,ADCResult,5);
+    LCD_disString(1,1,TEST_ADCValue);
+    DELAY_LCD_MS(100);
   }
-	
 }
 
-
-/*LCD测试用main函数
-void main( void )
+void testLCD(void)
 {
-	
-	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-	initLCD();
-  //LCD_clearAll();
-	while(1)
+  initLCD();
+  while(1)
 	{
-      LCD_drawLine(5,60,120,5,1);
-      LCD_disGraph();
+      //LCD_drawLine(5,60,120,5,1);
+      //LCD_disGraph();
+      LCD_disString(1,1,"HELLO WORLD!");
   }
-	
 }
-*/
+
+void main( void )
+{
+	
+	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+  testADC();	
+}
+
 
 /*Keyboard测试用main函数
 main(void) {
