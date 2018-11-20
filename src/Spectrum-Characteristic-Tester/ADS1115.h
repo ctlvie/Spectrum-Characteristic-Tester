@@ -162,10 +162,14 @@ void Write1Byte_ADS1115(unsigned char DataByte);
 unsigned char WriteNByte_ADS1115(unsigned char *writebuffer,unsigned char n);
 unsigned char Read1Byte_ADS1115(void);
 void ReadNByte_ADS1115(unsigned int*readbuff,unsigned char n);
-void initADS1115(void);
 void WriteWord_ADS1115(void);
 void ReadWord_ADS1115(void);
-float getADCValue(void);
+void configADS1115(void);
 void convertBINtoDEC(long int x);
+
+void initADC(int channel);
+void setADCChannel(int channel);
+float getADCValue(void);
+
 
 #endif

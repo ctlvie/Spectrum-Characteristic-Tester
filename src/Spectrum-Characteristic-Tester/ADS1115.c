@@ -225,16 +225,17 @@ void ReadNByte_ADS1115(unsigned int*readbuff,unsigned char n)
 
 }
 
+unsigned int MUX_REG = MUX_4;
 
 /*****************≥ı ºªØ******************/
-void initADS1115(void)
+void configADS1115(void)
 {
     SCL_SEL;
     SDA_SEL;
     SCL_DDR_OUT;
     SDA_DDR_OUT;
     SDA_H;
-    Config = OS+MUX+PGA+DR+COMP_QUE;
+    Config = OS+MUX_REG+PGA+DR+COMP_QUE;
     Writebuff[0]=ADDRESS_W;
     Writebuff[1]=Pointer_1;
     Writebuff[2]=Config/256;
@@ -277,11 +278,30 @@ void ReadWord_ADS1115(void)
 
 }
 
+void setADCChannel(int channel)
+{
+    switch(channel)
+    {
+        case 0:     MUX_REG = MUX_4;    break;  //AINp=AIN0, AINn=GND
+        case 1:     MUX_REG = MUX_5;    break;  //AINp=AIN1, AINn=GND
+        case 2:     MUX_REG = MUX_6;    break;  //AINp=AIN2, AINn=GND
+        case 3:     MUX_REG = MUX_7;    break;  //AINp=AIN3, AINn=GND
+        default :   MUX_REG = MUX_4;    break;
+    }
+}
+
+
+void initADC(int channel)
+{
+    setADCChannel(channel);
+    configADS1115();
+}
+
+
 /***************ADS1115********************/
 float getADCValue(void)
 {
     float result = 0;
-    initADS1115();
     WriteWord_ADS1115();
     DELAY_ADS1115_1MS();
     ReadWord_ADS1115();
@@ -304,7 +324,6 @@ void convertBINtoDEC(long int x)
           convertBINtoDEC(x/10);
     }
 }
-
 
 
 
