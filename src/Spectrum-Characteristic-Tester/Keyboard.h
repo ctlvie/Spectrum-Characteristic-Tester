@@ -30,8 +30,8 @@ Date        By          Version     Description
 #define IO_KEYBOARD_OUT     P4OUT
 #define IO_KEYBOARD_IN      P4IN
 
-#define CPU_F ((double)8000000)
-#define DELAY_KEYBOARD_MS(x) __delay_cycles((long)(CPU_F*(double)x/1000.0))
+#define CPU_F_KEYBORD ((double)8000000)
+#define DELAY_KEYBOARD_MS(x) __delay_cycles((long)(CPU_F_KEYBORD*(double)x/1000.0))
 #define PARA_DEBOUNCE      10           //用于调整消抖的最短时间参数
 #define PARA_WAITFORBUTTON 3000         //用于调整两次按键之间有效间隔的参数
 uchar keyScan(void);
