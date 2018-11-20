@@ -186,7 +186,6 @@ void initLCD()
 	DELAY_LCD_MS(20);
 	WriteCommand(0x01);  //«Âø’œ‘ æ
 	DELAY_LCD_MS(200);
-	LCD_clearScreen();
 }
 
 
