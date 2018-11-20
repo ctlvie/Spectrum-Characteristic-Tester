@@ -3,18 +3,19 @@ Author				  :				ctlvie
 Email Address		  :				ctlvie@gmail.com
 Filename			  :				LCD12864.c
 Date				  :			    2018-11-19
-Description			  :				12864液晶屏驱动
+Description			  :				12864液晶屏驱动(串行)
 
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
 181119		ctlvie		1.0			字符、汉字显示和清屏函数
+181120		ctlvie		1.1			打点、画线函数
 ========================================================*/
 #include<msp430f5529.h>
 #include"LCD12864.h"
  
 
-uchar LCD_BUFF[] =
+uchar LCD_GraphBuff[] =
 {
 /*--  调入了一幅图像：C:\Documents and Settings\Administrator\桌面\1.bmp  --*/
 /*--  宽度x高度=128x64  --*/
@@ -84,7 +85,7 @@ uchar LCD_BUFF[] =
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
 
-uchar CorpInf[]=
+uchar LCD_ChineseBuff[]=
 {
 	"频谱特性测试"
 	"Tester"
@@ -92,12 +93,12 @@ uchar CorpInf[]=
 	"123.58Mhz"
 };
 
-void DelayUs2x(unsigned char t)
+void DelayUs2x(uchar t)
 {   
  while(--t);
 }
  
-void DELAY_LCD_MS(unsigned char t)
+void DELAY_LCD_MS(uchar t)
 {
      
  while(t--)
@@ -107,8 +108,14 @@ void DELAY_LCD_MS(unsigned char t)
 	 DelayUs2x(245);
  }
 }
- 
-void SendByte(unsigned char zdata)
+
+//-------------------------------------------------
+//Name:     	SendByte(uchar zdata)    
+//Description:  向LCD12864发送1Byte数据
+//Input:        uchar zdata : 需要发送的数据
+//Output:       无
+//------------------------------------------------- 
+void SendByte(uchar zdata)
 {
 	unsigned int i;
 	
@@ -127,40 +134,14 @@ void SendByte(unsigned char zdata)
 	}
 }
 
-uchar ReadByte(void)
-{
-	uchar temp1=0,temp2=0,i;
-	for(i=0;i<8;i++)
-	{
-		temp1=temp1<<1;
-		SCLK0;
-		SCLK1;
-		SCLK0;
-		IO_LCD_DIR &=~ IO_LCD_BIT_SID;
-		if(IO_LCD_IN & IO_LCD_BIT_SID)
-		{
-			temp1++;
-		}
-		IO_LCD_DIR |= IO_LCD_BIT_SID;
-	}
-	for(i=0;i<8;i++)
-	{
-		temp2=temp2<<1;
-		SCLK0;
-		SCLK1;
-		SCLK0;
-		IO_LCD_DIR &=~ IO_LCD_BIT_SID;
-		if(IO_LCD_IN & IO_LCD_BIT_SID)
-		{
-			temp2++;
-		}
-		IO_LCD_DIR |= IO_LCD_BIT_SID;	
-	}
-	return ((0xf0&temp1)+(0x0f&temp2));
-}
 
- 
-void WriteCommand(unsigned char cmdcode)
+//-------------------------------------------------
+//Name:      	WriteCommand(uchar cmdcode) 
+//Description: 	向LCD12864发送命令 
+//Input:        uchar cmdcode : 命令代码
+//Output:       无
+//------------------------------------------------- 
+void WriteCommand(uchar cmdcode)
 {
 	CS1;
 	SendByte(0xf8);   //1 1 1 1 RS RW 0   写操作RW=0 11111000写数据 11111010写指令
@@ -170,7 +151,14 @@ void WriteCommand(unsigned char cmdcode)
 	CS0;
 }
  
-void WriteData(unsigned char Dispdata)
+
+//-------------------------------------------------
+//Name:         WriteData(uchar Dispdata)
+//Description:  向LCD12864发送数据
+//Input:        uchar Dispdata : 需要发送的数据
+//Output:       无
+//------------------------------------------------- 
+void WriteData(uchar Dispdata)
 {
 	CS1;
 	SendByte(0xfa);
@@ -179,7 +167,14 @@ void WriteData(unsigned char Dispdata)
 	DELAY_LCD_MS(1);
 	CS0;
 }
- 
+
+
+//-------------------------------------------------
+//Name:     	initLCD()    
+//Description:  LCD12864初始化函数
+//Input:        无
+//Output:       无
+//------------------------------------------------- 
 void initLCD()
 {
     IO_LCD_DIR = 0xFF;
@@ -191,15 +186,48 @@ void initLCD()
 	DELAY_LCD_MS(20);
 	WriteCommand(0x01);  //清空显示
 	DELAY_LCD_MS(200);
+	LCD_clearScreen();
 }
- 
- void LCD_clearAll(void)
+
+
+//-------------------------------------------------
+//Name:         LCD_clearCommand(void)
+//Description:  发送清屏命令(0x01)
+//Input:        无
+//Output:       无
+//------------------------------------------------- 
+ void LCD_clearCommand(void)
  {
      WriteCommand(0x01);
      DELAY_LCD_MS(100);
  }
-  
-void LCD_disString(unsigned int x,unsigned int y,unsigned char* s)
+
+
+//-------------------------------------------------
+//Name:         LCD_clearScreen(void)
+//Description:  清空整个屏幕(以绘制空白图像的方式)
+//Input:        无
+//Output:       无
+//------------------------------------------------- 
+ void LCD_clearScreen(void)
+ {
+     LCD_disPic((void*)0);
+     DELAY_LCD_MS(100);
+ }
+
+//=======================================================
+//Tips: LCD_disXXX  为直接在LCD12864上进行显示的各类函数
+//		LCD_drawXXX 为修改LCD_GraphBuff的各类函数,需要在绘制完成后调用LCD_disGraph(void)将其显示在LCD12864的屏幕上
+
+//-------------------------------------------------
+//Name:         LCD_disString(unsigned int x,unsigned int y,uchar* s)
+//Description:  显示字符
+//Input:        unsigned int x :	字符显示位置的x坐标
+//				unsigned int y:		字符显示位置的y坐标
+//				uchar* s:	需要显示的字符
+//Output:       无
+//------------------------------------------------- 
+void LCD_disString(unsigned int x,unsigned int y,uchar* s)
 {
 	 switch(y)
      {
@@ -217,7 +245,14 @@ void LCD_disString(unsigned int x,unsigned int y,unsigned char* s)
    }
 }
 
- void LCD_disGBStr(uchar *CorpInf)
+
+//-------------------------------------------------
+//Name:         LCD_disGBStr(uchar *LCD_ChineseBuff)
+//Description:  显示中文字符
+//Input:        uchar *LCD_ChineseBuff : 需要显示的中文存放在此uchar数组中
+//Output:       无
+//------------------------------------------------- 
+ void LCD_disGBStr(uchar *LCD_ChineseBuff)
 {
 	uchar uc_GBCnt;
 
@@ -228,20 +263,27 @@ void LCD_disString(unsigned int x,unsigned int y,unsigned char* s)
 	WriteCommand(0x80);
 	for (uc_GBCnt=0;uc_GBCnt<16;uc_GBCnt++)
 	{
-		WriteData(CorpInf[2 * uc_GBCnt]);
-		WriteData(CorpInf[2 * uc_GBCnt + 1]);
+		WriteData(LCD_ChineseBuff[2 * uc_GBCnt]);
+		WriteData(LCD_ChineseBuff[2 * uc_GBCnt + 1]);
 	};
 
 	WriteCommand(0x90);
 	for (uc_GBCnt=0;uc_GBCnt<16;uc_GBCnt++)
 	{
-		WriteData(CorpInf[2 * uc_GBCnt + 32]);
-		WriteData(CorpInf[2 * uc_GBCnt + 33]);
+		WriteData(LCD_ChineseBuff[2 * uc_GBCnt + 32]);
+		WriteData(LCD_ChineseBuff[2 * uc_GBCnt + 33]);
 	};
 
 	DELAY_LCD_MS(20);
 }
 
+
+//-------------------------------------------------
+//Name:         LCD_disPic(uchar *xc_PicArea)
+//Description:  显示图片(用于取模后图片的整体显示)
+//Input:        uchar *xc_PicArea : 图片取模后存放在此uchar数组中
+//Output:       无
+//------------------------------------------------- 
 void LCD_disPic(uchar *xc_PicArea)
 {
 	uchar uc_HorAddr,uc_VerAddr;
@@ -267,7 +309,14 @@ void LCD_disPic(uchar *xc_PicArea)
 	DELAY_LCD_MS(20);
 }
 
-void LCD_disBuff(uchar *xc_PicArea)
+
+//-------------------------------------------------
+//Name:         LCD_disGraph(void)
+//Description:  显示图像(全局变量 uchar LCD_GraphBuff[] 对应的图像)
+//Input:        无
+//Output:       无
+//------------------------------------------------- 
+void LCD_disGraph(void)
 {
 	uchar uc_HorAddr,uc_VerAddr;
 	uchar uc_VerCnt,uc_HorCnt;
@@ -284,15 +333,24 @@ void LCD_disBuff(uchar *xc_PicArea)
 		WriteCommand(uc_HorAddr);
 		
 		for (uc_HorCnt=0;uc_HorCnt<16;uc_HorCnt++)
-			WriteData(xc_PicArea[uc_VerCnt*16 + uc_HorCnt ]);
+			WriteData(LCD_GraphBuff[uc_VerCnt*16 + uc_HorCnt ]);
 
 		for (uc_HorCnt=0;uc_HorCnt<16;uc_HorCnt++)
-			WriteData(xc_PicArea[16*32 +uc_VerCnt*16 + uc_HorCnt ]);
+			WriteData(LCD_GraphBuff[16*32 +uc_VerCnt*16 + uc_HorCnt ]);
 	};
 	DELAY_LCD_MS(20);
 }
 
-void LCD_drawDots(int x_pos, int y_pos,uint color)
+
+//-------------------------------------------------
+//Name:        	LCD_drawPoints(int x_pos, int y_pos,uint color) 
+//Description:  绘制任意点
+//Input:        int x_pos :		点的 x 坐标
+//				int y_pos :		点的 y 坐标
+//				uint color :	点的颜色( 1为显示; 0为不显示)
+//Output:       无
+//------------------------------------------------- 
+void LCD_drawPoints(int x_pos, int y_pos,uint color)
 {
 	 int buff_x, buff_y, offset, buff_number ;
 	 int currBuff;
@@ -302,7 +360,7 @@ void LCD_drawDots(int x_pos, int y_pos,uint color)
 	 buff_number = buff_y * 16 +buff_x ;
 	 if(color)
 	 {
-		 currBuff = LCD_BUFF[buff_number] ;
+		 currBuff = LCD_GraphBuff[buff_number] ;
 		 switch(offset)
 		 {
 			case 0:	currBuff = currBuff | 0b10000000; break;
@@ -314,11 +372,11 @@ void LCD_drawDots(int x_pos, int y_pos,uint color)
 			case 6:  currBuff = currBuff | 0b00000010; break;
 			case 7:  currBuff = currBuff | 0b00000001; break;
 		 }
-		 LCD_BUFF[buff_number] = currBuff;
+		 LCD_GraphBuff[buff_number] = currBuff;
 	 }
 	 else
 	 {
-		 currBuff = LCD_BUFF[buff_number] ;
+		 currBuff = LCD_GraphBuff[buff_number] ;
 		 switch(offset)
 		 {
 			case 0:	currBuff = currBuff & 0b01111111; break;
@@ -330,7 +388,115 @@ void LCD_drawDots(int x_pos, int y_pos,uint color)
 			case 6:  currBuff = currBuff & 0b11111101; break;
 			case 7:  currBuff = currBuff & 0b11111110; break;
 		 }
-		 LCD_BUFF[buff_number] = currBuff;
+		 LCD_GraphBuff[buff_number] = currBuff;
 	 }
 }
 
+
+//-------------------------------------------------
+//Name:         void LCD_drawLine_X(uchar X0,uchar X1,uchar Y,uchar Color)
+//Description:  绘制水平直线(y坐标不改变)
+//Input:        uchar X0 :	起点的 x 坐标
+//				uchar X1: 	终点的 x 坐标
+//				uchar Y:	直线的 y 坐标
+//				uchar Color: 颜色( 1为显示; 0为不显示)
+//Output:       无
+//------------------------------------------------- 
+void LCD_drawLine_X(uchar X0,uchar X1,uchar Y,uchar Color)
+{
+	uchar temp;
+	if (X0>X1)
+	{
+		temp=X1;
+		X1=X0;
+		X0=temp;
+	}
+	for(;X0<X1;X0++)
+		LCD_drawPoints(X0,Y,Color);
+}
+
+
+//-------------------------------------------------
+//Name:         void LCD_drawLine_Y(uchar X,uchar Y0,uchar Y1,uchar Color)
+//Description:  绘制水平直线(y坐标不改变)
+//Input:      	uchar X:	直线的 x 坐标
+//				uchar Y0 :	起点的 y 坐标
+//				uchar Y1: 	终点的 y 坐标	
+//				uchar Color: 颜色( 1为显示; 0为不显示)
+//Output:       无     
+//------------------------------------------------- 
+void LCD_drawLine_Y(uchar X,uchar Y0,uchar Y1,uchar Color)
+{
+	uchar temp;
+	if (Y0>Y1)
+	{
+		temp=Y1;
+		Y1=Y0;
+		Y0=temp;
+	}
+	for(;Y0<Y1;Y0++)
+		LCD_drawPoints(X,Y0,Color);
+}
+
+
+//-------------------------------------------------
+//Name:         LCD_drawLine(uchar X0,uchar Y0,uchar X1,uchar Y1,uchar Color)
+//Description:  绘制任意直线
+//Input:        uchar X0 :	起点的 x 坐标
+//				uchar Y0 :	起点的 y 坐标
+//				uchar X1 :	终点的 x 坐标
+//				uchar Y1 :	终点的 y 坐标
+//Output:       无
+//------------------------------------------------- 
+void LCD_drawLine(uchar X0,uchar Y0,uchar X1,uchar Y1,uchar Color)
+{
+	int t,distance;
+	int x=0,y=0,delta_x,delta_y;
+	int incx,incy;
+	delta_x=X1-X0;
+	delta_y=Y1-Y0;
+	if(delta_x>0)
+		incx=1;
+	else if(delta_x==0)
+	{
+		LCD_drawLine_Y(X0,Y0,Y1,Color);
+		return ;
+	}
+	else
+		incx=-1;
+
+	if(delta_y>0)
+		incy=1;
+	else if(delta_y==0)
+	{
+		LCD_drawLine_X(X0,X1,Y0,Color);
+		return ;
+	}
+	else
+		incy=-1;
+
+	delta_x=fabs(delta_x);
+	delta_y=fabs(delta_y);
+	if(delta_x>delta_y)
+		distance=delta_x;
+	else
+		distance = delta_y;
+
+	LCD_drawPoints(X0,Y0,Color);
+	for(t=0;t<=distance+1;t++)
+	{
+		LCD_drawPoints(X0,Y0,Color);
+		x+=delta_x;
+		y+=delta_y;
+		if(x>distance)
+		{
+			x-=distance;
+			X0+=incx;
+		}
+		if(y>distance )
+		{
+			y-=distance;
+			Y0+=incy;
+		}
+	}
+}

@@ -13,20 +13,20 @@ Date		By			Version		Description
 
 
 /*=======================================================
-接线方式:
-1. VSS -> GND
-2. VDD -> +5V
-3. VO  -> +5V ? 空脚
-4. CS  -> CS
-5. SID -> SID
-6. SCLK -> SCLK
-7~14.DB0~DB7 并行输入
-15. PSB-> 串行接GND 并行接+5V
-16. NC -> 空脚
-17. RST -> +5V
-18. VEE -> 空脚
-19. BLA -> +5V
-20. BLK -> GND
+    接线方式:
+    1. VSS -> GND
+    2. VDD -> +5V
+    3. VO  -> +5V ? 空脚
+    4. CS  -> CS
+    5. SID -> SID
+    6. SCLK -> SCLK
+    7~14.DB0~DB7 并行输入
+    15. PSB-> 串行接GND 并行接+5V
+    16. NC -> 空脚
+    17. RST -> +5V
+    18. VEE -> 空脚
+    19. BLA -> +5V
+    20. BLK -> GND
 ========================================================*/
 
 #ifndef LCD12864_H_
@@ -52,15 +52,18 @@ Date		By			Version		Description
 void DelayUs2x(unsigned char t);
 void DELAY_LCD_MS(unsigned char t);
 void SendByte(unsigned char zdata);
-uchar ReadByte(void);
 void WriteCommand(unsigned char cmdcode);
 void WriteData(unsigned char Dispdata);
-void LCD_clearAll(void);
+void LCD_clearCommand(void);
+void LCD_clearScreen(void);
 void LCD_disString(unsigned int x,unsigned int y,unsigned char* s);
-void LCD_disGBStr(unsigned char *CorpInf);
+void LCD_disGBStr(unsigned char *LCD_ChineseBuff);
 void LCD_disPic(uchar *xc_PicArea);
-void LCD_disBuff(uchar *xc_PicArea);
-void LCD_drawDots(int x_pos, int y_pos,uint color);
+void LCD_disGraph(void);
+void LCD_drawPoints(int x_pos, int y_pos,uint color);
+void LCD_drawLine_X(unsigned char X0,unsigned char X1,unsigned char Y,unsigned char Color);
+void LCD_drawLine_Y(unsigned char X,unsigned char Y0,unsigned char Y1,unsigned char Color);
+void LCD_drawLine(unsigned char X0,unsigned char Y0,unsigned char X1,unsigned char Y1,unsigned char Color);
 void initLCD();
 
 #endif /* LCD12864_H_ */

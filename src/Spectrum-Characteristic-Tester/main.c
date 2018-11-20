@@ -29,8 +29,8 @@ uchar virKey = 99;
   uchar arrayKey[40];
   int arrayNum = 0;
 
-extern uchar CorpInf[];
-extern uchar LCD_BUFF[];
+extern uchar LCD_ChineseBuff[];
+extern uchar LCD_GraphBuff[];
 
 void main( void )
 {
@@ -40,8 +40,8 @@ void main( void )
   //LCD_clearAll();
 	while(1)
 	{
-      LCD_drawDots(3,5,1);
-      LCD_disPic(LCD_BUFF);
+      LCD_drawLine(5,60,120,5,1);
+      LCD_disGraph();
   }
 	
 }
