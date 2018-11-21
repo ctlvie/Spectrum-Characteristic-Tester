@@ -80,12 +80,12 @@
 
 
 
-void TI_CC_SPISetup(void);
-void TI_CC_SPIWriteBurstReg(Uchar addr, Uchar *buffer, Uchar count);
-void TI_CC_SPIReadBurstReg(Uchar addr, Uchar *buffer, Uchar count);
-void Update_AD9854(void);
-void Io_Reset_AD9854(void);
-void Init_AD9854(void);
+void setSPI_AD9854(void);
+void writeSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count);
+void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count);
+void configAD9854(void);
+void resetAD9854(void);
+void initAD9854(void);
 void Write_AD9854_Frq1(void);
 void Write_AD9854_FrqSW(void);
 

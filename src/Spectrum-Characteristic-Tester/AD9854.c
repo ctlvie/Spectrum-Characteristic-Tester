@@ -24,6 +24,12 @@ unsigned char AD9854_Reg_Q_DAC[2]	={0x00,0x00};
 //                             BASIC FUNCTION                     //
 //                                                                //
 ////////////////////////////////////////////////////////////////////
+void DELAY_AD9854_MS (unsigned int ms)
+{
+	unsigned int iq0,iq1 ;
+	for ( iq0 = ms ; iq0 > 0 ;iq0 --)
+	for ( iq1 = LOOPCNT  ; iq1 > 0 ;iq1 --) ;
+}
 
 //******************************************************************************
 //函数名：TI_CC_SPISetup(void)
@@ -31,7 +37,7 @@ unsigned char AD9854_Reg_Q_DAC[2]	={0x00,0x00};
 //输出：无
 //功能描述：SPI总线端口设置
 //******************************************************************************
-void TI_CC_SPISetup(void)
+void setSPI_AD9854(void)
 {
   ME1 |= USPIE0;                            // Enable USART0 SPI mode
   UCTL0 |= CHAR + SYNC + MM;                // 8-bit SPI Master **SWRST**
@@ -52,7 +58,7 @@ void TI_CC_SPISetup(void)
 //输出：无
 //功能描述：SPI连续写配置寄存器
 //******************************************************************************
-void TI_CC_SPIWriteBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+void writeSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
 {
     Uchar i;
     U0TXBUF = (addr & 0x0F); 				// Send Write address
@@ -67,12 +73,12 @@ void TI_CC_SPIWriteBurstReg(Uchar addr, Uchar *buffer, Uchar count)
 }
 
 //******************************************************************************
-//函数名：void TI_CC_SPIReadBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+//函数名：void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
 //输入：地址，读出数据后暂存的缓冲区，读出配置个数
 //输出：无
 //功能描述：SPI连续读配置寄存器
 //******************************************************************************
-void TI_CC_SPIReadBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
 {
   unsigned int i;
   IFG1 &= ~URXIFG0;                         // Clear flag
@@ -96,7 +102,7 @@ void TI_CC_SPIReadBurstReg(Uchar addr, Uchar *buffer, Uchar count)
 //函数功能:更新设置
 //输入参数:无
 //******************************************************************
-void Update_AD9854(void)
+void configAD9854(void)
 {
   	unsigned i=100 ;        //
 	AD9854_UPDATE_OUT;
@@ -109,7 +115,7 @@ void Update_AD9854(void)
 //函数功能:复位
 //输入参数:无
 //******************************************************************
-void Io_Reset_AD9854(void)
+void resetAD9854(void)
 {
 	unsigned i=100 ;        //
 	AD9854_IO_RESET_UP ;
@@ -122,22 +128,22 @@ void Io_Reset_AD9854(void)
 //输入参数:无
 //硬件说明：
 //******************************************************************
-void Init_AD9854(void)
+void initAD9854(void)
 {
 	HARDWARE_AD9854 ;       //通过宏定义设置
-	TI_CC_SPISetup();		//初始化SPI总线
+	setSPI_AD9854();		//初始化SPI总线
 	AD9854_IO_serial;		//串行模式
 	AD9854_OSC_ON;			//打开时钟
 	AD9854_CS_DOWN ;        //片选	
 	AD9854_RESET_UP;	
-	DelayMs(10);
+	DELAY_AD9854_MS(10);
 	AD9854_RESET_DOWN;		//主复位	
-	Io_Reset_AD9854();
+	resetAD9854();
 	AD9854_OSC_OFF;			//关闭时钟，更新配置
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_CTR_REG,		//写控制寄存器
+	writeSPIBurstReg(AD9854_Addr_CTR_REG,		//写控制寄存器
 						AD9854_Reg_CTR_REG, AD9854_Length_CTR_REG);			
 	AD9854_OSC_ON;			//打开时钟，更新配置
-	DelayMs(10);
+	DELAY_AD9854_MS(10);
 	AD9854_UPDATE_OUT;
 	AD9854_UPDATE_DOWN;		//配置更新时钟为输出
 }
@@ -150,9 +156,9 @@ void Init_AD9854(void)
 //******************************************************************
 void Write_AD9854_Frq1(void)
 { 	
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
+	writeSPIBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
 						AD9854_Reg_FRE2, AD9854_Length_FRE1);
-	 Update_AD9854();
+	 configAD9854();
 
 }
 
@@ -165,16 +171,31 @@ void Write_AD9854_Frq1(void)
 //******************************************************************
 void Write_AD9854_FrqSW(void)
 { 	
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
+	writeSPIBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
 						AD9854_Reg_FRE1, AD9854_Length_FRE1);
-		  Io_Reset_AD9854();
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_FRE2,		//写频率控制寄存器2
+		  resetAD9854();
+	writeSPIBurstReg(AD9854_Addr_FRE2,		//写频率控制寄存器2
 						AD9854_Reg_FRE2, AD9854_Length_FRE2);
-		  Io_Reset_AD9854();
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_DELTA,		//写频率增量寄存器
+		  resetAD9854();
+	writeSPIBurstReg(AD9854_Addr_DELTA,		//写频率增量寄存器
 						AD9854_Reg_DELTA, AD9854_Length_DELTA);
-		  Io_Reset_AD9854();
-	TI_CC_SPIWriteBurstReg(AD9854_Addr_RAMP_CLK,	//写扫频时钟寄存器
+		  resetAD9854();
+	writeSPIBurstReg(AD9854_Addr_RAMP_CLK,	//写扫频时钟寄存器
 						AD9854_Reg_RAMP_CLK, AD9854_Length_RAMP_CLK);
-	  	Update_AD9854();
+	  	configAD9854();
 }
+
+void initClock_AD9854(void)
+{
+    unsigned int iq0;
+   _DINT();
+   BCSCTL1 &=~XT2OFF;
+   do
+   {
+      IFG1 &= ~OFIFG;		    	// 清除振荡器失效标志
+  for (iq0 = 0xFF; iq0 > 0; iq0--);	// 延时，等待XT2起振
+   }
+   while ((IFG1 & OFIFG) != 0);		// 判断XT2是否起振		
+   BCSCTL2 |=SELM1+SELS;			//MCLK为8MHz，SMCLK为8MHz ;
+}
+
