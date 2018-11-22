@@ -6,14 +6,14 @@
 unsigned char AD9854_Reg_PHA1[2]	={0x00,0x00};
 unsigned char AD9854_Reg_PHA2[2]	={0x00,0x00};
 unsigned char AD9854_Reg_FRE1[6]	={0x00,0xF0,0x00,0x00,0x00,0x00};
-unsigned char AD9854_Reg_FRE2[6]	={0x50,0x00,0x00,0x00,0x00,0x00};
-unsigned char AD9854_Reg_DELTA[6]	={0x00,0x00,0x00,0x01,0x00,0x00};
+unsigned char AD9854_Reg_FRE2[6]	={0x80,0x00,0x00,0x00,0x00,0x00};
+unsigned char AD9854_Reg_DELTA[6]	={0x00,0x00,0x00,0x10,0x00,0x00};
 unsigned char AD9854_Reg_UPDATA[4]	={0x00,0x00,0x00,0x00};
 unsigned char AD9854_Reg_RAMP_CLK[3]={0x00,0x00,0x01};
 unsigned char AD9854_Reg_CTR_REG[4]	={	Bin(00010000),       //comp pd dowm  ctr[28]=0 //qac pd down ctr[26]=0
-                           				Bin(01000110),       //no pll pass ctr[21]=0  //multi times 6 ctr[19-16]=00110  
-			   							Bin(00100101),       //ext update ctr[8]=0    //Ramped FSK 
-                           				Bin(01000000) };     //pass inv CR[6]=1//osk EN ctr[5]=0 //msb first ctr[1]=0 //no sdo active ctr[0]=0
+                                        Bin(01000110),       //no pll pass ctr[21]=0  //multi times 6 ctr[19-16]=00110  
+                                        Bin(00100100),       //ext update ctr[8]=0    //Ramped FSK 
+                                        Bin(01000000) };     //pass inv CR[6]=1//osk EN ctr[5]=0 //msb first ctr[1]=0 //no sdo active ctr[0]=0
 unsigned char AD9854_Reg_I_MUL[2]	={0x00,0x00};
 unsigned char AD9854_Reg_Q_MUL[2]	={0x00,0x00};
 unsigned char AD9854_Reg_SHAPED[1]	={0x00};
@@ -24,6 +24,8 @@ unsigned char AD9854_Reg_Q_DAC[2]	={0x00,0x00};
 //                             BASIC FUNCTION                     //
 //                                                                //
 ////////////////////////////////////////////////////////////////////
+
+//MCLK的频率为8000KHz的条件下延时ms个毫秒
 void DELAY_AD9854_MS (unsigned int ms)
 {
 	unsigned int iq0,iq1 ;
@@ -32,71 +34,75 @@ void DELAY_AD9854_MS (unsigned int ms)
 }
 
 //******************************************************************************
-//函数名：TI_CC_SPISetup(void)
-//输入：无
+//函数名：SpisendByte(Uchar dat)
+//输入：发送的数据
 //输出：无
-//功能描述：SPI总线端口设置
+//功能描述：SPI发送一个字节
 //******************************************************************************
-void setSPI_AD9854(void)
+Uchar sendByte_AD9854(Uchar dat)
 {
-  ME1 |= USPIE0;                            // Enable USART0 SPI mode
-  UCTL0 |= CHAR + SYNC + MM;                // 8-bit SPI Master **SWRST**
-  UTCTL0 |= CKPL + SSEL1 + SSEL0 + STC;     // SMCLK, 3-pin mode
-  UBR00 = 0x45;                             // UCLK/2  1F
-  UBR10 = 0x00;                             // 0
-  UMCTL0 = 0x4A;                            // No modulation  00
-  TI_CC_SPI_USART0_PxSEL |= TI_CC_SPI_USART0_SIMO | TI_CC_SPI_USART0_SOMI | TI_CC_SPI_USART0_UCLK;
-                                            // SPI option select
-  TI_CC_SPI_USART0_PxDIR |= TI_CC_SPI_USART0_SIMO + TI_CC_SPI_USART0_UCLK;
-                                            // SPI TXD out direction
-  UCTL0 &= ~SWRST;                          // Initialize USART state machine
+//----------------------以下是模拟SPI时序方式-----------------------------------
+	Uchar i,temp;
+	temp = 0;	
+	AD9854_SCLK_DOWN;
+	for(i=0; i<8; i++)
+	{
+		if(dat & 0x80)
+		{
+	     AD9854_SDIO_UP;
+		}
+		else 
+		{
+		 AD9854_SDIO_DOWN;
+		}
+		dat <<= 1;
+	        AD9854_SCLK_UP; 
+		temp <<= 1;
+	if(AD9854_SDO_IN)temp++;  //读取MISO状态
+		AD9854_SCLK_DOWN;
+	}
+	return temp;
 }
 
+
 //******************************************************************************
-//函数名：TI_CC_SPIWriteBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+//函数名：writeSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count)
 //输入：地址，写入缓冲区，写入个数
 //输出：无
 //功能描述：SPI连续写配置寄存器
 //******************************************************************************
-void writeSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+void writeSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count)
 {
-    Uchar i;
-    U0TXBUF = (addr & 0x0F); 				// Send Write address
-    while (!(IFG1&UTXIFG0));                // Wait for TX to finish
+    Uchar i,temp;
+    temp = (addr & 0x0F); 				// Send Write address
+	AD9854_CS_DOWN;
+	while (AD9854_SDO_IN);
+	sendByte_AD9854(temp);
     for (i = 0; i < count; i++)
     {
-      U0TXBUF = buffer[i];                  // Send data
-      while (!(IFG1&UTXIFG0));              // Wait for TX to finish
+        sendByte_AD9854(buffer[i]);
     }
-    IFG1 &= ~URXIFG0;
-    while(!(IFG1&URXIFG0));
+    AD9854_CS_UP;
 }
 
 //******************************************************************************
-//函数名：void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+//函数名：void readSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count)
 //输入：地址，读出数据后暂存的缓冲区，读出配置个数
 //输出：无
 //功能描述：SPI连续读配置寄存器
 //******************************************************************************
-void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count)
+void readSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count)
 {
-  unsigned int i;
-  IFG1 &= ~URXIFG0;                         // Clear flag
-  U0TXBUF = ((addr & 0x0F) | 0x80);  		// Send Read address
-  while (!(IFG1&UTXIFG0));                  // Wait for TXBUF ready
-  U0TXBUF = 0;                              // Dummy write to read 1st data byte
-  // Addr byte is now being TX'ed, with dummy byte to follow immediately after
-  while (!(IFG1&URXIFG0));                  // Wait for end of addr byte TX
-  IFG1 &= ~URXIFG0;                         // Clear flag
-  while (!(IFG1&URXIFG0));                  // Wait for end of 1st data byte TX
-  // First data byte now in RXBUF
-  for (i = 0; i < (count-1); i++)
-  {
-    U0TXBUF = 0;                            //Initiate next data RX, meanwhile..
-    buffer[i] = U0RXBUF;                    // Store data from last data RX
-    while (!(IFG1&URXIFG0));                // Wait for end of data RX
-  }
-  buffer[count-1] = U0RXBUF;                // Store last RX byte in buffer
+  unsigned int i,temp;
+  temp = ((addr & 0x0F) | 0x80);  		// Send Read address
+  AD9854_CS_DOWN;
+  while (AD9854_SDO_IN);
+  sendByte_AD9854(temp); 
+  for (i = 0; i < count; i++) 
+	{
+      buffer[i] = sendByte_AD9854(0);
+    }
+  AD9854_CS_UP;
 }
 
 //函数功能:更新设置
@@ -131,7 +137,6 @@ void resetAD9854(void)
 void initAD9854(void)
 {
 	HARDWARE_AD9854 ;       //通过宏定义设置
-	setSPI_AD9854();		//初始化SPI总线
 	AD9854_IO_serial;		//串行模式
 	AD9854_OSC_ON;			//打开时钟
 	AD9854_CS_DOWN ;        //片选	
@@ -140,7 +145,7 @@ void initAD9854(void)
 	AD9854_RESET_DOWN;		//主复位	
 	resetAD9854();
 	AD9854_OSC_OFF;			//关闭时钟，更新配置
-	writeSPIBurstReg(AD9854_Addr_CTR_REG,		//写控制寄存器
+	writeSPIBurstReg_AD9854(AD9854_Addr_CTR_REG,		//写控制寄存器
 						AD9854_Reg_CTR_REG, AD9854_Length_CTR_REG);			
 	AD9854_OSC_ON;			//打开时钟，更新配置
 	DELAY_AD9854_MS(10);
@@ -154,9 +159,9 @@ void initAD9854(void)
 //写入地址字节数:1 Byte
 //写入数据字节数:6 Bytes 
 //******************************************************************
-void Write_AD9854_Frq1(void)
+void writeAD9854_Freq1(void)
 { 	
-	writeSPIBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
+	writeSPIBurstReg_AD9854(AD9854_Addr_FRE1,		//写频率控制寄存器1
 						AD9854_Reg_FRE2, AD9854_Length_FRE1);
 	 configAD9854();
 
@@ -169,25 +174,30 @@ void Write_AD9854_Frq1(void)
 //写入地址字节数:1 Byte
 //写入数据字节数:6 Bytes 
 //******************************************************************
-void Write_AD9854_FrqSW(void)
+void writeAD9854_FreqSW(void)
 { 	
-	writeSPIBurstReg(AD9854_Addr_FRE1,		//写频率控制寄存器1
+	writeSPIBurstReg_AD9854(AD9854_Addr_FRE1,		//写频率控制寄存器1
 						AD9854_Reg_FRE1, AD9854_Length_FRE1);
 		  resetAD9854();
-	writeSPIBurstReg(AD9854_Addr_FRE2,		//写频率控制寄存器2
+	writeSPIBurstReg_AD9854(AD9854_Addr_FRE2,		//写频率控制寄存器2
 						AD9854_Reg_FRE2, AD9854_Length_FRE2);
 		  resetAD9854();
-	writeSPIBurstReg(AD9854_Addr_DELTA,		//写频率增量寄存器
+	writeSPIBurstReg_AD9854(AD9854_Addr_DELTA,		//写频率增量寄存器
 						AD9854_Reg_DELTA, AD9854_Length_DELTA);
 		  resetAD9854();
-	writeSPIBurstReg(AD9854_Addr_RAMP_CLK,	//写扫频时钟寄存器
+	writeSPIBurstReg_AD9854(AD9854_Addr_RAMP_CLK,	//写扫频时钟寄存器
 						AD9854_Reg_RAMP_CLK, AD9854_Length_RAMP_CLK);
 	  	configAD9854();
 }
 
-void initClock_AD9854(void)
+
+//******************************************************************************
+//系统初始化
+//******************************************************************************
+/*
+void Initsys()
 {
-    unsigned int iq0;
+   unsigned int iq0;
    _DINT();
    BCSCTL1 &=~XT2OFF;
    do
@@ -196,6 +206,18 @@ void initClock_AD9854(void)
   for (iq0 = 0xFF; iq0 > 0; iq0--);	// 延时，等待XT2起振
    }
    while ((IFG1 & OFIFG) != 0);		// 判断XT2是否起振		
-   BCSCTL2 |=SELM1+SELS;			//MCLK为8MHz，SMCLK为8MHz ;
+   BCSCTL2 |=SELM1+SELS;			//MCLK为8MHz，SMCLK为8MHz ;                
 }
 
+void main( void )
+{
+     WDTCTL = WDTPW + WDTHOLD ; 
+     Initsys();   
+     initAD9854();
+ 	writeAD9854_FreqSW();
+	//writeAD9854_Freq1();
+     while(1) ;
+
+}
+
+*/

@@ -1,39 +1,49 @@
 
 #ifndef AD9854_H_
 #define AD9854_H_
-
 #define  uclong   unsigned long
 #define  Uchar    unsigned char
 #define LongToBin(n) (((n>>21)&0x80)|((n>>18)&0x40)|((n>>15)&0x20)|((n>>12)&0x10)|((n>>9)&0x08)|((n>>6)&0x04)|((n>>3)&0x02)|((n)&0x01)) 
 #define Bin(n) LongToBin(0x##n##l)
+
+/*=======================================================
+    接线方式:
+    1. CS   -> 
+    2. SCLK    -> 
+    3. UPDATE  -> 
+    4. SDIO  -> 
+    5. SDO -> 
+    6. RESET -> 
+    7. Serial ->
+    8. OSC
+========================================================*/
+
+
 //******************************************************************
 //端口操作
-#define TI_CC_SPI_USART0_PxSEL  P3SEL       // interfaces, according to the pin
-#define TI_CC_SPI_USART0_PxDIR  P3DIR       // assignments indicated in the
-#define TI_CC_SPI_USART0_PxIN   P3IN        // chosen MSP430 device datasheet.
-#define TI_CC_SPI_USART0_SIMO   0x02
-#define TI_CC_SPI_USART0_SOMI   0x04
-#define TI_CC_SPI_USART0_UCLK   0x08
 
-#define AD9854_CS_UP       P6OUT |= BIT2
-#define AD9854_CS_DOWN     P6OUT &=~BIT2   	//片选
-#define AD9854_SCLK_UP     P3OUT |= BIT3
-#define AD9854_SCLK_DOWN   P3OUT &=~BIT3	//数据时钟
-#define AD9854_UPDATE_UP   P2OUT |= BIT4
-#define AD9854_UPDATE_DOWN P2OUT &=~BIT4	//更新时钟
-#define AD9854_UPDATE_OUT   P2DIR |= BIT4
-#define AD9854_UPDATE_IN 	P2DIR &=~BIT4	//更新时钟方向
-#define AD9854_SDIO_UP     P3OUT |= BIT1
-#define AD9854_SDIO_DOWN   P3OUT &=~BIT1	//数据输入
-#define AD9854_IO_RESET_UP    P3OUT |= BIT0
-#define AD9854_IO_RESET_DOWN  P3OUT &=~BIT0	//SPI总线复位
-#define AD9854_RESET_UP    P6OUT |= BIT6
-#define AD9854_RESET_DOWN  P6OUT &=~BIT6   	//主复位
-#define AD9854_IO_parallel P6OUT |= BIT7
-#define AD9854_IO_serial   P6OUT &=~BIT7   	//串并选择
-#define AD9854_OSC_ON    	P6OUT |= BIT5	
-#define AD9854_OSC_OFF  	P6OUT &=~BIT5	//晶振控制
-#define  HARDWARE_AD9854   P6DIR |= BIT2+BIT5+BIT6+BIT7;P3DIR |= BIT0+BIT1+BIT3;P6OUT &=~BIT5 //AD9854_OSC_OFF
+//第二版硬件
+#define AD9854_CS_UP       P1OUT |= BIT6
+#define AD9854_CS_DOWN     P1OUT &=~BIT6   	//片选
+#define AD9854_SCLK_UP     P2OUT |= BIT6
+#define AD9854_SCLK_DOWN   P2OUT &=~BIT6	//数据时钟
+#define AD9854_UPDATE_UP   P2OUT |= BIT7
+#define AD9854_UPDATE_DOWN P2OUT &=~BIT7	//更新时钟
+#define AD9854_UPDATE_OUT   P2DIR |= BIT7
+#define AD9854_UPDATE_IN 	P2DIR &=~BIT7	//更新时钟方向
+#define AD9854_SDIO_UP     P2OUT |= BIT0
+#define AD9854_SDIO_DOWN   P2OUT &=~BIT0	//数据输出
+#define AD9854_SDO_IN      (P2IN & 0x02) 	//数据输入
+#define AD9854_IO_RESET_UP    P2OUT |= BIT2
+#define AD9854_IO_RESET_DOWN  P2OUT &=~BIT2	//SPI总线复位
+#define AD9854_RESET_UP    P1OUT |= BIT7
+#define AD9854_RESET_DOWN  P1OUT &=~BIT7   	//主复位
+#define AD9854_IO_parallel //P6OUT |= BIT7
+#define AD9854_IO_serial   //P6OUT &=~BIT7   	//串并选择
+#define AD9854_OSC_ON    	P5OUT |= BIT6	
+#define AD9854_OSC_OFF  	P5OUT &=~BIT6	//晶振控制
+#define  HARDWARE_AD9854   P1DIR |= BIT6+BIT7;P2DIR |= BIT0+BIT2+BIT6;P5DIR |= BIT6;P5OUT &=~BIT6 //AD9854_OSC_OFF
+
 
 ////////////////////////////////////////////////////////////////////
 //                                                                //
@@ -78,15 +88,18 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+#define  FREQUENCY  8000     // MCLK的频率为8000KHz ,即1秒钟执行8M个时钟周期
+#define  LOOPBODY  8         //MSP430中一个for循环体耗费8个周期
+#define  LOOPCNT ( unsigned int )  (( FREQUENCY/LOOPBODY ))
 
-
-void setSPI_AD9854(void);
-void writeSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count);
-void readSPIBurstReg(Uchar addr, Uchar *buffer, Uchar count);
+void DELAY_AD9854_MS (unsigned int ms);
+Uchar sendByte_AD9854(Uchar dat);
+void writeSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count);
+void readSPIBurstReg_AD9854(Uchar addr, Uchar *buffer, Uchar count);
 void configAD9854(void);
 void resetAD9854(void);
 void initAD9854(void);
-void Write_AD9854_Frq1(void);
-void Write_AD9854_FrqSW(void);
+void writeAD9854_Freq1(void);
+void writeAD9854_FreqSW(void);
 
 #endif /* AD9854_H_ */
