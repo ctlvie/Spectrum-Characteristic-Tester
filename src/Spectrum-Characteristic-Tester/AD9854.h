@@ -1,9 +1,15 @@
-/*
- * AD9854.h
- *
- *  Created on: 2018年11月15日
- *      Author: Admin
- */
+/*=======================================================
+Author				  :				ctlvie
+Email Address		  :				ctlvie@gmail.com
+Filename			  :				AD9854.h
+Date				  :			    2018-11-22
+Description			  :				AD9854 DDS驱动程序
+
+Modification History:
+Date		By			Version		Description
+----------------------------------------------------------
+181122		ctlvie		1.0			
+========================================================*/
 
 #ifndef AD9854_H_
 #define AD9854_H_
@@ -16,6 +22,58 @@
 #ifndef uint
 #define uint unsigned int
 #endif
+
+/*=======================================================
+    接线方式:
+    1. DataBus  ->  P3.0 ~ P3.7
+    2. AddrBus  ->  P4.0 ~ P4.7
+    3. RD       ->  P1.2
+    4. WR       ->  P1.3
+    5. UCLK     ->  P1.4
+    6. RST      ->  P1.5
+========================================================*/
+
+
+#define IO_AD9854_DataBus_OUT       P3OUT
+#define IO_AD9854_AddrBus_OUT       P4OUT
+#define IO_AD9854_CtlBus_OUT        P1OUT
+#define IO_AD9854_DataBus_DIR       P3DIR 
+#define IO_AD9854_AddrBus_DIR       P4DIR
+#define IO_AD9854_CtlBus_DIR        P1DIR
+
+#define IO_AD9854_BIT_RD            BIT4
+#define IO_AD9854_BIT_WR            BIT5
+#define IO_AD9854_BIT_UCLK          BIT6
+#define IO_AD9854_BIT_RST           BIT7
+
+
+
+#define AD9854_DataBus              IO_AD9854_DataBus_OUT             //P3BIT0 ~ IO_AD9854_BIT_RST 为数据总线, 对应 D0 ~ D7
+#define AD9854_AddrBus              IO_AD9854_AddrBus_OUT             //P2BIT0 ~ IO_AD9854_BIT_RST 为地址总线, 对应 A0 ~ A5
+#define DIROUT_AD9854_DataBus       IO_AD9854_DataBus_DIR = BIT0 + BIT1 + BIT2 + BIT3 + IO_AD9854_BIT_RD + IO_AD9854_BIT_WR + IO_AD9854_BIT_UCLK + IO_AD9854_BIT_RST ;      //数据线IO口设为输出
+#define DIROUT_AD9854_AddrBus       IO_AD9854_AddrBus_DIR = BIT0 + BIT1 + BIT2 + BIT3 + IO_AD9854_BIT_RD + IO_AD9854_BIT_WR ;     //地址线IO口设为输出
+#define DIROUT_RD                   IO_AD9854_CtlBus_DIR |= IO_AD9854_BIT_RD;    //P4.4 -> RD
+#define DIROUT_WR                   IO_AD9854_CtlBus_DIR |= IO_AD9854_BIT_WR;    //P4.5 -> WR
+#define DIROUT_UDCLK                IO_AD9854_CtlBus_DIR |= IO_AD9854_BIT_UCLK;    //P4.6 -> UCLK
+#define DIROUT_RST                  IO_AD9854_CtlBus_DIR |= IO_AD9854_BIT_RST;    //P4.7 -> RST
+#define RD0_AD9854                  IO_AD9854_CtlBus_OUT &= ~IO_AD9854_BIT_RD;   //RD使能(低有效)
+#define RD1_AD9854                  IO_AD9854_CtlBus_OUT |= IO_AD9854_BIT_RD;
+#define WR0_AD9854                  IO_AD9854_CtlBus_OUT &= ~IO_AD9854_BIT_WR;   //WR使能(低有效)
+#define WR1_AD9854                  IO_AD9854_CtlBus_OUT |= IO_AD9854_BIT_WR;
+#define UCLK0_AD9854                IO_AD9854_CtlBus_OUT &= ~IO_AD9854_BIT_UCLK;   //更新时钟
+#define UCLK1_AD9854                IO_AD9854_CtlBus_OUT |= IO_AD9854_BIT_UCLK;
+#define RST0_AD9854                 IO_AD9854_CtlBus_OUT &= ~IO_AD9854_BIT_RST;   //复位信号
+#define RST1_AD9854                 IO_AD9854_CtlBus_OUT |= IO_AD9854_BIT_RST;
+//**************************以下部分为函数定义********************************
+
+void WriteByte_AD9854(uchar addr,uchar dat);
+void initAD9854(void);
+void convertFreq(long Freq);
+void setSinOutput(ulong Freq,uint Shape);
+void convertFreq_double(double Freq);
+void AD9854_SetSine_double(double Freq,uint Shape);
+
+
 //extern uchar FreqWord[6];              //6个字节频率控制字
 //**********************以下为系统时钟以及其相关变量设置**************************
 
@@ -96,34 +154,6 @@ const double Freq_mult_doulle = 1082596.064271754;
 const ulong  Freq_mult_ulong  = 938250;
 const double Freq_mult_doulle = 938249.9223688533;
 */
-//**************************修改硬件时要修改的部分********************************
-
-#define AD9854_DataBus              P3OUT             //P3BIT0 ~ BIT7 为数据总线, 对应 D0 ~ D7
-#define AD9854_AdrBus               P2OUT             //P2BIT0 ~ BIT7 为地址总线, 对应 A0 ~ A5
-#define DIROUT_AD9854_DataBus       P3DIR = 0xff      //数据线IO口设为输出
-#define DIROUT_AD9854_AdrBus        P2DIR = 0xff      //地址线IO口设为输出
-#define DIROUT_RD                   P4DIR |= BIT4;    //P4.4 -> RD
-#define DIROUT_WR                   P4DIR |= BIT5;    //P4.5 -> WR
-#define DIROUT_UDCLK                P4DIR |= BIT6;    //P4.6 -> UCLK
-#define DIROUT_RST                  P4DIR |= BIT7;    //P4.7 -> RST
-#define CLR_9854RD                  P4OUT &= ~BIT4;   //RD使能(低有效)
-#define SET_9854RD                  P4OUT |= BIT4;
-#define CLR_9854WR                  P4OUT &= ~BIT5;   //WR使能(低有效)
-#define SET_9854WR                  P4OUT |= BIT5;
-#define CLR_9854UDCLK               P4OUT &= ~BIT6;   //更新时钟
-#define SET_9854UDCLK               P4OUT |= BIT6;
-#define CLR_9854RST                 P4OUT &= ~BIT7;   //复位信号
-#define SET_9854RST                 P4OUT |= BIT7;
-//**************************以下部分为函数定义********************************
-
-void AD9854_WR_Byte(uchar addr,uchar dat);
-void AD9854_Init(void);
-void Freq_convert(long Freq);
-void AD9854_SetSine(ulong Freq,uint Shape);
-void Freq_double_convert(double Freq);
-void AD9854_SetSine_double(double Freq,uint Shape);
-
-
 
 
 #endif /* AD9854_H_ */
