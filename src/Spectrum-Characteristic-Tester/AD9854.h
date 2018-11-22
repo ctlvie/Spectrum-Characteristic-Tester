@@ -71,7 +71,7 @@ void initAD9854(void);
 void convertFreq(long Freq);
 void setSinOutput(ulong Freq,uint Shape);
 void convertFreq_double(double Freq);
-void AD9854_SetSine_double(double Freq,uint Shape);
+void setSinOutput_double(double Freq,uint Shape);
 
 
 //extern uchar FreqWord[6];              //6个字节频率控制字

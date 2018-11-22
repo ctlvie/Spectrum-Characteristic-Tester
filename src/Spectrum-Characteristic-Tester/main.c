@@ -64,11 +64,17 @@ void testLCD(void)
   }
 }
 
+void testDDS(void)
+{
+  initAD9854();
+  setSinOutput(2,2000);
+}
+
 void main( void )
 {
 	
 	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-  testADC();	
+  testDDS();	
 }
 
 
