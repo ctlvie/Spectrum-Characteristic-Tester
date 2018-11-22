@@ -18,7 +18,7 @@ Date        By          Version     Description
 #include"Keyboard.h"
 #include"LCD12864.h"
 #include"ADS1115.h"
-
+#include "Button.h"
 #define uint  unsigned int
 #define uchar unsigned char
 #define ulong unsigned long
@@ -35,6 +35,8 @@ extern uchar LCD_ChineseBuff[];
 extern uchar LCD_GraphBuff[];
 float ADCResult = 0;
 int t = 0;
+int stateOfS1 = 0;
+int stateOfS2 = 0;
 
 
 void testADC(void)
@@ -70,24 +72,66 @@ void testDDS(void)
   setSinOutput(2,2000);
 }
 
-void main( void )
+void testKeyboard(void)
 {
-	
-	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-  testDDS();	
-}
-
-
-/*Keyboard测试用main函数
-main(void) {
-  WDTCTL = WDTPW + WDTHOLD;
-  uchar tempKey;
-
-
   while(1) {
     arrayKey[arrayNum] = getKeyValue();
     arrayNum ++ ;
   }
+}
+
+int testButton1 = 0;
+int testButton2 = 0;
+void testButton(void)
+{
+  buttonsPressed = 0 ;
+  P1DIR |= BIT0;
+  P1OUT &= ~BIT0;
+  Buttons_init(BUTTON_ALL);
+  Buttons_interruptEnable(BUTTON_ALL);
+  while(1)
+  {
+    if(buttonsPressed & BUTTON_S1)
+    {
+      P1OUT ^= BIT0;
+      testButton1 ++;
+      buttonsPressed = 0 ;
+    }
+
+    if(buttonsPressed & BUTTON_S2)
+    {
+      P1OUT ^= BIT0;
+      testButton2 ++;
+      buttonsPressed = 0 ;
+    }
+  }
+}
+
+void main( void )
+{
+	
+	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+	testButton();
+}
+
+/*
+int testButton1 = 0;
+int testButton2 = 0;
+
+#pragma vector = PORT1_VECTOR
+__interrupt void Port_1(void)
+{
+  stateOfS1 = 1;
+  P1IFG &= ~BIT1;
+  testButton1 ++;
+}
+
+#pragma vector = PORT2_VECTOR
+__interrupt void Port_2(void)
+{
+  stateOfS2 = 1;
+  P2IFG &= ~BIT1;
+  testButton2 ++;
 }
 */
 
