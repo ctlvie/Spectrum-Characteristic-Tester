@@ -1,5 +1,15 @@
+/*=======================================================
+Author			    :				ctlvie
+Email Address		:				ctlvie@gmail.com
+Filename	        :				Button.c
+Date				:		        2018-11-22
+Description			:				LaunchPad片上按键控制
 
-
+Modification History:
+Date		By			Version		Description
+----------------------------------------------------------
+181122		ctlvie		1.0			功能实现
+========================================================*/
 
 #include <msp430f5529.h>
 #include "Button.h"
@@ -20,6 +30,7 @@ void initButtonsTimer(void)
 void initButtons(void)
 {
     _DINT();
+    P2REN |= BIT1; //防止P2.1IO口烧坏
     IO_BUTTON_S2_REN |= IO_BUTTON_BIT_S2;
     IO_BUTTON_S2_OUT |= IO_BUTTON_BIT_S2;
     IO_BUTTON_S2_DIR &= IO_BUTTON_BIT_S2;
@@ -42,30 +53,6 @@ void initButtons(void)
 }
 
 
-
-#pragma vector=PORT2_VECTOR
-__interrupt void Port_2(void)
-{
-    t ++;
-    if(IO_BUTTON_S1_IFG&IO_BUTTON_BIT_S1)
-    {
-        if (key_pre_cnt < BUTTON_THRESHOLD) Button_S1=Button_S1;
-
-        if (key_pre_cnt > BUTTON_THRESHOLD)
-            {
-            Button_S1 = 1;
-            key_pre_cnt=0;
-            } 
-    }
-    IO_BUTTON_S1_IFG &=~ IO_BUTTON_BIT_S1;
-    IO_BUTTON_S1_IFG = 0;
-    IO_BUTTON_S1_IES |= IO_BUTTON_BIT_S1;
-    IO_BUTTON_S1_IE |= IO_BUTTON_BIT_S1;
-
-}
-
-
-
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1(void)
 {
@@ -73,20 +60,35 @@ __interrupt void Port_1(void)
     if(IO_BUTTON_S2_IFG&IO_BUTTON_BIT_S2)
     {
 
-         if (key_pre_cnt < BUTTON_THRESHOLD) Button_S2 = Button_S2;
-
-         if (key_pre_cnt > BUTTON_THRESHOLD)
-             {
-             Button_S2 = 1;
-             key_pre_cnt=0;
-             }
-     
+        if (key_pre_cnt < BUTTON_THRESHOLD) 
+            Button_S2 = Button_S2;
+        else
+        {
+            Button_S2 = 1;
+            key_pre_cnt=0;
+        }
+        IO_BUTTON_S2_IFG &=~ IO_BUTTON_BIT_S2;
+        IO_BUTTON_S2_IFG = 0;
+        IO_BUTTON_S2_IES |= IO_BUTTON_BIT_S2;
+        IO_BUTTON_S2_IE |= IO_BUTTON_BIT_S2;
+    }
+    else if(IO_BUTTON_S1_IFG&IO_BUTTON_BIT_S1)
+    {
+        if (key_pre_cnt < BUTTON_THRESHOLD) 
+            Button_S1=Button_S1;
+        else
+        {
+            Button_S1 = 1;
+            key_pre_cnt=0;
+        } 
+        IO_BUTTON_S1_IFG &=~ IO_BUTTON_BIT_S1;
+        IO_BUTTON_S1_IFG = 0;
+        IO_BUTTON_S1_IES |= IO_BUTTON_BIT_S1;
+        IO_BUTTON_S1_IE |= IO_BUTTON_BIT_S1;    
     }
 
-    IO_BUTTON_S2_IFG &=~ IO_BUTTON_BIT_S2;
-    IO_BUTTON_S2_IFG = 0;
-    IO_BUTTON_S2_IES |= IO_BUTTON_BIT_S2;
-    IO_BUTTON_S2_IE |= IO_BUTTON_BIT_S2;
+
+
 }
 
 
