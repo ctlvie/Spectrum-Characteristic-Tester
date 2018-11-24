@@ -35,8 +35,8 @@ extern uchar LCD_ChineseBuff[];
 extern uchar LCD_GraphBuff[];
 float ADCResult = 0;
 int t = 0;
-int stateOfS1 = 0;
-int stateOfS2 = 0;
+volatile int Button_S1;
+volatile int Button_S2;
 
 
 void testADC(void)
@@ -87,24 +87,24 @@ void testButton(void)
 {
   initLCD();
   initButtons();
+  P1DIR |= BIT0;
   while(1)
   {
-    if(buttonsPressed & BUTTON_S2)
+    if(Button_S1)
     {
+      Button_S1 = 0;
       P1OUT ^= BIT0;
       testButton1 ++;
-      buttonsPressed = 0 ;
       LCD_disString(testButton1,1,"A");
     }
-    else if(buttonsPressed & BUTTON_S1)
+    if(Button_S2)
     {
+      Button_S2 = 0;
       P1OUT ^= BIT0;
       testButton2 ++;
-      buttonsPressed = 0 ;
       LCD_disString(testButton2,2,"B");
     }
-    else
-      buttonsPressed = 0;
+
   }
 
 }

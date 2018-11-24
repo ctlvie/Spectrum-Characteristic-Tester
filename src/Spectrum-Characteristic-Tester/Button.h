@@ -13,20 +13,33 @@ Date		By			Version		Description
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
+#define BUTTON_THRESHOLD  60
 
-#include <stdint.h>
+#define IO_BUTTON_S1_IFG P2IFG
+#define IO_BUTTON_S1_IN  P2IN
+#define IO_BUTTON_S1_DIR P2DIR
+#define IO_BUTTON_S1_IES P2IES
+#define IO_BUTTON_S1_OUT P2OUT
+#define IO_BUTTON_S1_IE  P2IE
+#define IO_BUTTON_S1_REN P2REN
 
-#define BUTTON_S2       0x0002          //P1.1
-#define BUTTON_S1       0x0200          //P2.1
-#define BUTTON_ALL      0x0202          
+#define IO_BUTTON_S2_IFG P1IFG
+#define IO_BUTTON_S2_IN  P1IN
+#define IO_BUTTON_S2_DIR P1DIR
+#define IO_BUTTON_S2_IES P1IES
+#define IO_BUTTON_S2_OUT P1OUT
+#define IO_BUTTON_S2_IE  P1IE
+#define IO_BUTTON_S2_REN P1REN
 
-volatile extern uint16_t buttonsPressed;
-volatile extern uint8_t  buttonDebounce;
+#define IO_BUTTON_BIT_S1 BIT2
+#define IO_BUTTON_BIT_S2 BIT1
 
-extern void Buttons_init(uint16_t buttonsMask);
-extern void Buttons_interruptEnable(uint16_t buttonsMask);
-extern void Buttons_interruptDisable(uint16_t buttonsMask);
+#define CPU_F_BUTTON ((double)8000000)
+#define DELAY_BUTTON_US(x) __delay_cycles((long)(CPU_F_BUTTON*(double)x/1000000.0))
+#define DELAY_BUTTON_MS(x) __delay_cycles((long)(CPU_F_BUTTON*(double)x/1000.0))
+
 
 void initButtons(void);
+void initButtonsTimer(void);
 
 #endif /* BUTTON_H_ */
