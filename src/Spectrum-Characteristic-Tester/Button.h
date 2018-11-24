@@ -27,6 +27,6 @@ extern void Buttons_init(uint16_t buttonsMask);
 extern void Buttons_interruptEnable(uint16_t buttonsMask);
 extern void Buttons_interruptDisable(uint16_t buttonsMask);
 
-
+void initButtons(void);
 
 #endif /* BUTTON_H_ */

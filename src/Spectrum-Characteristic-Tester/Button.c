@@ -1,17 +1,47 @@
-/*=======================================================
-Author			    :				ctlvie
-Email Address		:				ctlvie@gmail.com
-Filename	        :				Button.c
-Date				:		        2018-11-22
-Description			:				??????
+/*******************************************************************************
+ *
+ *  HAL_Buttons.c - Driver for the buttons
+ *
+ *  Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ******************************************************************************/
 
-Modification History:
-Date		By			Version		Description
-----------------------------------------------------------
-181122		ctlvie		1.0			
-========================================================*/
-#include <msp430f5529.h>
+/***************************************************************************//**
+ * @file       HAL_Buttons.c
+ * @addtogroup HAL_Buttons
+ * @{
+ ******************************************************************************/
+#include "msp430f5529.h"
 #include "Button.h"
+
 #define BUTTON_PORT_DIR   PADIR
 #define BUTTON_PORT_OUT   PAOUT
 #define BUTTON_PORT_SEL   PASEL
@@ -20,10 +50,10 @@ Date		By			Version		Description
 #define BUTTON_PORT_IES   PAIES
 #define BUTTON_PORT_IFG   PAIFG
 #define BUTTON_PORT_IN    PAIN
-#define BUTTON1_PIN       BIT1       //P2.1
-#define BUTTON2_PIN       BIT1       //P1.1
-#define BUTTON1_IFG       P2IFG      //P2.1
-#define BUTTON2_IFG       P1IFG      //P1.1
+#define BUTTON1_PIN       BIT1       //P1.7
+#define BUTTON2_PIN       BIT1       //P2.2
+#define BUTTON1_IFG       P2IFG      //P1.7
+#define BUTTON2_IFG       P1IFG      //P1.7
 
 volatile uint8_t buttonDebounce = 1;
 volatile uint16_t buttonsPressed = 0;
@@ -37,6 +67,16 @@ void Buttons_startWDT(void);
  *                       initialize
  * @return none
  ******************************************************************************/
+
+
+void initButtons(void)
+{
+    buttonsPressed = 0 ;
+    PADIR &= ~0x0202;
+    Buttons_init(BUTTON_ALL);
+    Buttons_interruptEnable(BUTTON_ALL);
+    _EINT();
+}
 
 void Buttons_init(uint16_t buttonsMask)
 {
@@ -101,7 +141,7 @@ __interrupt void WDT_ISR(void)
     if (buttonDebounce == 2)
     {
         buttonDebounce = 1;
-
+        BUTTON_PORT_IFG &= ~BUTTON_ALL;
         SFRIFG1 &= ~WDTIFG;
         SFRIE1 &= ~WDTIE;
         WDTCTL = WDTPW + WDTHOLD;
@@ -135,6 +175,10 @@ __interrupt void Port2_ISR(void)
             break;
 
         // Vector  P2IV_P2IFG1:  P2IV P2IFG.1
+        case  P2IV_P2IFG2:
+            break;
+
+        // Vector  P2IV_P2IFG2:  P2IV P2IFG.2
         case  P2IV_P2IFG1:
             if (buttonDebounce == 1)
             {
@@ -146,10 +190,7 @@ __interrupt void Port2_ISR(void)
             {
                 __bic_SR_register_on_exit(LPM4_bits);
             }
-            break;
 
-        // Vector  P2IV_P2IFG2:  P2IV P2IFG.2
-        case  P2IV_P2IFG2:
             break;
 
         // Vector  P2IV_P2IFG3:  P2IV P2IFG.3
@@ -203,8 +244,7 @@ __interrupt void Port1_ISR(void)
         // Vector  P1IV_P1IFG0:  P1IV P1IFG.0
         case  P1IV_P1IFG0:
             break;
-
-        // Vector  P1IV_P1IFG1:  P1IV P1IFG.1
+                // Vector  P1IV_P1IFG7:  P1IV P1IFG.7
         case  P1IV_P1IFG1:
             if (buttonDebounce == 1)
             {
@@ -217,7 +257,9 @@ __interrupt void Port1_ISR(void)
                 __bic_SR_register_on_exit(LPM4_bits);
             }
 
-            break;
+            break;    
+
+
 
         // Vector  P1IV_P1IFG2:  P1IV P1IFG.2
         case  P1IV_P1IFG2:
@@ -239,10 +281,9 @@ __interrupt void Port1_ISR(void)
         case  P1IV_P1IFG6:
             break;
 
-        // Vector  P1IV_P1IFG7:  P1IV P1IFG.7
+        // Vector  P1IV_P1IFG1:  P1IV P1IFG.1
         case  P1IV_P1IFG7:
             break;
-
         // Default case
         default:
             break;
@@ -252,4 +293,3 @@ __interrupt void Port1_ISR(void)
 /***************************************************************************//**
  * @}
  ******************************************************************************/
-

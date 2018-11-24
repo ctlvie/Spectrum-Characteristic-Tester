@@ -69,8 +69,9 @@ void testLCD(void)
 void testDDS(void)
 {
   initAD9854();
-  setSinOutput(2,2000);
+  setSinOutput(200,4090);
 }
+
 
 void testKeyboard(void)
 {
@@ -84,36 +85,36 @@ int testButton1 = 0;
 int testButton2 = 0;
 void testButton(void)
 {
-  buttonsPressed = 0 ;
-  P1DIR |= BIT0;
-  P1OUT &= ~BIT0;
-  Buttons_init(BUTTON_ALL);
-  Buttons_interruptEnable(BUTTON_ALL);
+  initLCD();
+  initButtons();
   while(1)
   {
-    if(buttonsPressed & BUTTON_S1)
+    if(buttonsPressed & BUTTON_S2)
     {
       P1OUT ^= BIT0;
       testButton1 ++;
       buttonsPressed = 0 ;
+      LCD_disString(testButton1,1,"A");
     }
-
-    if(buttonsPressed & BUTTON_S2)
+    else if(buttonsPressed & BUTTON_S1)
     {
       P1OUT ^= BIT0;
       testButton2 ++;
       buttonsPressed = 0 ;
+      LCD_disString(testButton2,2,"B");
     }
+    else
+      buttonsPressed = 0;
   }
+
 }
 
 void main( void )
 {
 	
-	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-	testButton();
+ 	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
+  testButton();
 }
-
 /*
 int testButton1 = 0;
 int testButton2 = 0;
