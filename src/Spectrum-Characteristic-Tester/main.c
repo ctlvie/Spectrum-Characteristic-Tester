@@ -19,6 +19,7 @@ Date        By          Version     Description
 #include"LCD12864.h"
 #include"ADS1115.h"
 #include "Button.h"
+#include "Board.h"
 #define uint  unsigned int
 #define uchar unsigned char
 #define ulong unsigned long
@@ -109,11 +110,68 @@ void testButton(void)
 
 }
 
-void main( void )
+void main(void)
 {
 	
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-  testButton();
+  initLCD();
+  initButtons();
+  initBoard();
+  LCD_disString(1,1,"1.Amplitude");
+  LCD_disString(1,2,"2.Phase");
+  LED1_ON;
+  LED2_ON;
+  while(1)
+  {
+    if(Button_S1)
+    {
+      Button_S1 = 0;
+      LED1_OFF;
+      LCD_clearScreen();
+      LCD_disString(1,1,"Amplitude Test");
+      LCD_disString(1,2,"1.Scan");
+      LCD_disString(1,3,"2.Point");
+      while(1)
+      {
+        if(Button_S1)
+        {
+          Button_S1 = 0;
+          LCD_clearScreen();
+          LCD_disString(1,2,"Scan Method");
+        }
+        if(Button_S2)
+        {
+          Button_S2 = 0;
+          LCD_clearScreen();
+          LCD_disString(1,2,"Point Method");
+        }
+      }
+    }
+    if(Button_S2)
+    {
+      Button_S2 = 0;
+      LED2_OFF;
+      LCD_clearScreen();
+      LCD_disString(1,1,"Phase Test");
+      LCD_disString(1,2,"1.Scan");
+      LCD_disString(1,3,"2.Point");
+      while(1)
+      {
+        if(Button_S1)
+        {
+          Button_S1 = 0;
+          LCD_clearScreen();
+          LCD_disString(1,2,"Scan Method");
+        }
+        if(Button_S2)
+        {
+          Button_S2 = 0;
+          LCD_clearScreen();
+          LCD_disString(1,2,"Point Method");
+        }
+      }
+    }
+  } 
 }
 /*
 int testButton1 = 0;

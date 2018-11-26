@@ -210,8 +210,10 @@ void initLCD()
 //------------------------------------------------- 
  void LCD_clearScreen(void)
  {
-     LCD_disPic((void*)0);
-     DELAY_LCD_MS(100);
+     LCD_disString(1,1,"                    ");
+     LCD_disString(1,2,"                    ");
+	 LCD_disString(1,3,"                    ");
+	 LCD_disString(1,4,"                    ");
  }
 
 //=======================================================
