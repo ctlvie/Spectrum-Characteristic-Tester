@@ -36,7 +36,8 @@ uchar virKey = 99;
 
 extern uchar LCD_ChineseBuff[];
 extern uchar LCD_GraphBuff[];
-float ADCResult = 0;
+float ADCResult0 = 0;
+float ADCResult1 = 0;
 int t = 0;
 volatile int Button_S1;
 volatile int Button_S2;
@@ -44,17 +45,21 @@ volatile int Button_S2;
 
 void testADC(void)
 {
-  unsigned char TEST_ADCValue[8];
+  unsigned char TEST_ADCValue0[8];
+  unsigned char TEST_ADCValue1[8];
   WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
   initLCD();
-  LCD_clearCommand();
-  initADC(0);
+  LCD_clearScreen();
   while(1)
   { 
-    ADCResult = getADCValue();
-    convertFloattoCharArray(TEST_ADCValue,8,ADCResult,5);
-    LCD_disString(1,1,TEST_ADCValue);
-    DELAY_LCD_MS(100);
+    initADC(0);
+    ADCResult0 = getADCValue();
+    convertFloattoCharArray(TEST_ADCValue0,8,ADCResult0,5);
+    LCD_disString(1,1,TEST_ADCValue0);
+    initADC(1);
+    ADCResult1 = getADCValue();
+    convertFloattoCharArray(TEST_ADCValue1,8,ADCResult1,5);
+    LCD_disString(1,3,TEST_ADCValue1);
   }
 }
 
@@ -176,7 +181,7 @@ void testScanFreq(void)
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-  testScanFreq();
+  testADC();
 }
 
 /*
