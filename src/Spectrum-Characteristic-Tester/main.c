@@ -169,6 +169,10 @@ void testInput(void)
 }
 
 unsigned long testCurrFreq;
+
+float ScanResult_I_1kHz[99];
+float ScanResult_Q_1kHz[99];
+
 void testScanFreq(void)
 {
   initAD9854();
@@ -181,7 +185,7 @@ void testScanFreq(void)
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-  testADC();
+  testScanFreq();
 }
 
 /*
