@@ -356,7 +356,8 @@ void LCD_drawPoints(int x_pos, int y_pos,uint color)
 	 int buff_x, buff_y, offset, buff_number ;
 	 int currBuff;
 	 buff_x = x_pos / 8 ;
-	 offset = x_pos % 8 - 1 ;
+	 offset = x_pos % 8 ;
+	 //offset = x_pos % 8 - 1 ;
 	 buff_y = y_pos - 1 ;
 	 buff_number = buff_y * 16 +buff_x ;
 	 if(color)
