@@ -13,7 +13,7 @@ Date		By			Version		Description
 
 #include <msp430f5529.h>
 #include"FormatConvert.h"
-
+#include<math.h>
 #include <stdio.h>
 
 void recurParse(int n, unsigned char** str, unsigned int* restSize) {
@@ -112,4 +112,37 @@ void convertInttoCharArray(unsigned char* outputChar, unsigned int InputInt, uns
      i--;
      InputInt /= 10;
    }
+}
+
+
+float abs_f(float x)
+{
+	float i;
+	i=x;
+	if(i<0)
+		i=-i;
+	else
+		i=i;
+	return i;
+}
+
+float SqrtByNewton(float x)
+{
+	float val = x;//最终
+	float last;//保存上一个计算的值
+ 	do
+ 	{
+		last = val;
+		val =(val + x/val) / 2;
+	}
+	while(abs_f(val-last) > 0.01); //精度控制
+	return val;
+}
+
+float Arctan(float input)
+{
+	float output;
+	output = (float)atan((double)input);
+	output = output * 180 / 3.1415;
+	return output;
 }
