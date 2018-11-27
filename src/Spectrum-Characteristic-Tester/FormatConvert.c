@@ -87,3 +87,29 @@ void convertFloattoCharArray(unsigned char* outputChar, unsigned int bufferSize,
         //return bufferSize - restSize;
 }
 
+int convertCharArraytoInt(unsigned char Array[], int Bits)
+{
+	int Result = 0;
+	int i = 0, j = 0;
+	int times = 0;
+	for(i = Bits - 1; i >= 0 ; i--)
+	{
+		times = 1;
+		for(j = 0 ; j < (Bits - i - 1); j ++)
+			times = times * 10;
+		Result += (Array[i] - '0')* times;
+	}
+	return Result;
+}
+
+void convertInttoCharArray(unsigned char* outputChar, unsigned int InputInt, unsigned int size)
+{
+  unsigned int i = 0;
+  i = size - 1;
+   while(InputInt)
+   {
+     outputChar[i] = InputInt % 10 + '0';
+     i--;
+     InputInt /= 10;
+   }
+}
