@@ -206,13 +206,13 @@ uchar getKeyValue(void) {
   }while ( (KeyValue == 14) ||(KeyValue == 24) ||(KeyValue == 34) ||(KeyValue == 44)
           ||(KeyValue == 41) ||(KeyValue == 43) ||(KeyValue == 44) ); //屏蔽不需要的键值
   if (KeyValue == 11) return '1';  
-  else if (KeyValue == 12) return '2';
-  else if (KeyValue == 13) return '3';
-  else if (KeyValue == 21) return '4';
+  else if (KeyValue == 12) return '4';
+  else if (KeyValue == 13) return '7';
+  else if (KeyValue == 21) return '2';
   else if (KeyValue == 22) return '5';
-  else if (KeyValue == 23) return '6';
-  else if (KeyValue == 31) return '7';
-  else if (KeyValue == 32) return '8';
+  else if (KeyValue == 23) return '8';
+  else if (KeyValue == 31) return '3';
+  else if (KeyValue == 32) return '6';
   else if (KeyValue == 33) return '9';
   else return '0';
 }

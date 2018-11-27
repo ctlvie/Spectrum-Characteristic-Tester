@@ -24,11 +24,11 @@ Date        By          Version     Description
 #define uint unsigned int
 #endif
 
-#define IO_KEYBOARD_SEL     P4SEL
-#define IO_KEYBOARD_REN     P4REN
-#define IO_KEYBOARD_DIR     P4DIR
-#define IO_KEYBOARD_OUT     P4OUT
-#define IO_KEYBOARD_IN      P4IN
+#define IO_KEYBOARD_SEL     P6SEL
+#define IO_KEYBOARD_REN     P6REN
+#define IO_KEYBOARD_DIR     P6DIR
+#define IO_KEYBOARD_OUT     P6OUT
+#define IO_KEYBOARD_IN      P6IN
 
 #define CPU_F_KEYBORD ((double)8000000)
 #define DELAY_KEYBOARD_MS(x) __delay_cycles((long)(CPU_F_KEYBORD*(double)x/1000.0))
