@@ -18,7 +18,11 @@ Date		By			Version		Description
 
 #define CPU_F_PROCESS ((double)8000000)
 #define DELAY_PROCESS_MS(x) __delay_cycles((long)(CPU_F_KEYBORD*(double)x/1000.0))
+#define SCAN_SIZE 100
+#define STEP_FREQ 10000
 
-void ScanAmpFreq(unsigned int mode);
+void ScanFreq(void);
+void Calculate_Amp(void);
+void Calculate_Phase(void);
 
 #endif /* PROCESSMODULE_H_ */

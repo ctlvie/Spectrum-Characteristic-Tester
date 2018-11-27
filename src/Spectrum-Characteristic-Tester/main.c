@@ -21,6 +21,7 @@ Date        By          Version     Description
 #include "Button.h"
 #include "Board.h"
 #include"ProcessModule.h"
+#include<math.h>
 
 #define uint  unsigned int
 #define uchar unsigned char
@@ -170,8 +171,10 @@ void testInput(void)
 
 unsigned long testCurrFreq;
 
-float ScanResult_I_1kHz[99];
-float ScanResult_Q_1kHz[99];
+float ScanResult_I[SCAN_SIZE];
+float ScanResult_Q[SCAN_SIZE];
+float AmpResult[SCAN_SIZE];
+float PhaseResult[SCAN_SIZE];
 
 void testScanFreq(void)
 {
@@ -179,7 +182,8 @@ void testScanFreq(void)
   initADC(0);
   initLCD();
   initButtons();
-  ScanAmpFreq(MODE_1KHZ);
+  ScanFreq();
+  Calculate_Phase();
 }
 
 void main(void)
