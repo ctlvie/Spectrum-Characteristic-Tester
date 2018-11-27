@@ -20,6 +20,8 @@ Date        By          Version     Description
 #include"ADS1115.h"
 #include "Button.h"
 #include "Board.h"
+#include"ProcessModule.h"
+
 #define uint  unsigned int
 #define uchar unsigned char
 #define ulong unsigned long
@@ -161,11 +163,20 @@ void testInput(void)
   LCD_disString(1,1,arrayBuff);
 }
 
+unsigned long testCurrFreq;
+void testScanFreq(void)
+{
+  initAD9854();
+  initADC(0);
+  initLCD();
+  initButtons();
+  ScanAmpFreq(MODE_1KHZ);
+}
 
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-   testInput();
+  testScanFreq();
 }
 
 /*
@@ -176,6 +187,8 @@ void main(void)
   initLCD();
   initButtons();
   initBoard();
+  initAD9854();
+  initADC();
   LCD_disString(1,1,"1.Amplitude");
   LCD_disString(1,2,"2.Phase");
   LED1_ON;
@@ -196,7 +209,24 @@ void main(void)
         {
           Button_S1 = 0;
           LCD_clearScreen();
-          LCD_disString(1,2,"Scan Method");
+          LCD_disString(1,1,"Scan Method");
+          LCD_disString(0,3,"Set Step Freq");
+          LCD_disString(0,4,"S1:10Hz S2:1kHz");
+          while(1)
+          {
+            if(Button_S1)
+            {
+              Button_S1 = 0;
+              LCD_clearScreen();
+              LCD_disString(1,2,"10Hz");
+            }
+            if(Button_S2)
+            {
+              Button_S2 = 0;
+              LCD_clearScreen();
+              LCD_disString(1,2,"1kHz");
+            }
+          }
         }
         if(Button_S2)
         {
@@ -220,7 +250,24 @@ void main(void)
         {
           Button_S1 = 0;
           LCD_clearScreen();
-          LCD_disString(1,2,"Scan Method");
+          LCD_disString(1,1,"Scan Method");
+          LCD_disString(0,3,"Set Step Freq");
+          LCD_disString(0,4,"S1:10Hz S2:1kHz");
+          while(1)
+          {
+            if(Button_S1)
+            {
+              Button_S1 = 0;
+              LCD_clearScreen();
+              LCD_disString(1,2,"10Hz");
+            }
+            if(Button_S2)
+            {
+              Button_S2 = 0;
+              LCD_clearScreen();
+              LCD_disString(1,2,"1kHz");
+            }
+          }
         }
         if(Button_S2)
         {
