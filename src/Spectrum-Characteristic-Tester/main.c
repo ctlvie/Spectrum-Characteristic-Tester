@@ -110,6 +110,65 @@ void testButton(void)
 
 }
 
+int testInputResult = 0;
+uchar arrayBuff[4] = {'0','0','0','0'};
+
+int  inputNum(void)
+{
+    uint currInputBits;
+    int inputNumResult;
+    int cleatVir = 0;
+startInput:
+    for(cleatVir = 0; cleatVir < 4; cleatVir ++)
+        arrayBuff[cleatVir] = '0';
+    currInputBits = 0;
+    inputNumResult = 0;
+    LCD_clearScreen();
+    LCD_disString(1,1,"Input:");
+    LCD_disString(1,3,arrayBuff); 
+    for(currInputBits = 0; currInputBits <= 3; currInputBits ++)
+    {
+        arrayBuff[currInputBits] = getKeyValue();
+        LCD_disString(1,3,arrayBuff);
+    }
+    inputNumResult = convertCharArraytoInt(arrayBuff, 4);
+    LCD_disString(1,4,"S1:Clear S2:OK");
+    while(1)
+    {
+      if(Button_S1)
+      {
+        Button_S1 = 0;
+        goto startInput;
+      }
+      if(Button_S2)
+      {
+        Button_S2 = 0;
+        return inputNumResult;
+      }
+    }
+    
+}
+
+void testInput(void)
+{
+  uchar testInputBuff[4];
+  initLCD();
+  initButtons();
+  testInputResult = 0;
+  testInputResult = inputNum();
+  LCD_clearScreen();
+  convertInttoCharArray(testInputBuff,testInputResult,4);
+  LCD_disString(1,1,arrayBuff);
+}
+
+
+void main(void)
+{
+ 	WDTCTL = WDTPW + WDTHOLD; //¹Ø±Õ¿´ÃÅ¹·
+   testInput();
+}
+
+/*
 void main(void)
 {
 	
@@ -173,6 +232,8 @@ void main(void)
     }
   } 
 }
+*/
+
 /*
 int testButton1 = 0;
 int testButton2 = 0;
