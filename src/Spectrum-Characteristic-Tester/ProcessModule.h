@@ -21,8 +21,25 @@ Date		By			Version		Description
 #define SCAN_SIZE 100
 #define STEP_FREQ 10000
 
+#define X_START     10
+#define Y_START     2
+#define X_DEST      110
+#define Y_DEST      62
+#define X_LENGTH    100 //X_DEST - X_START
+#define Y_LENGTH    60  //Y_DEST - Y_START
+#define Y_MIDDLE    32  //Y_START + (Y_LENGTH / 2)
+
+
+#define MODE_AMP    1
+#define MODE_PHASE  2
 void ScanFreq(void);
 void Calculate_Amp(void);
 void Calculate_Phase(void);
+int convertCord_Y(int inputY);
+void drawAmpCordinate(void);
+void drawPhaseCordinate(void);
+void drawAmpCurve_Linear(void);
+void drawAmpCurve_dB(void);
+void drawPhaseCurve();
 
 #endif /* PROCESSMODULE_H_ */

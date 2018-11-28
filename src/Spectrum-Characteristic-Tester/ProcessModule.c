@@ -20,6 +20,7 @@ Date		By			Version		Description
 #include "Button.h"
 #include "Board.h"
 #include <stdlib.h>
+#include <math.h>
 
 extern unsigned long testCurrFreq;
 
@@ -27,8 +28,11 @@ extern unsigned long testCurrFreq;
 extern float ScanResult_I[SCAN_SIZE];
 extern float ScanResult_Q[SCAN_SIZE];
 extern float AmpResult[SCAN_SIZE];
+extern float AmpResult_dB[SCAN_SIZE];
 extern float PhaseResult[SCAN_SIZE];
-
+extern float x_Scale;
+extern float y_Scale;
+extern float test;
 void ScanFreq(void)
 {
     unsigned long currFreq = 1000;
@@ -81,9 +85,6 @@ void Calculate_Amp(void)
         temp = (currI * currI) + (currQ * currQ);
         AmpResult[i] = 2 * SqrtByNewton(temp);
     }
-    LCD_clearScreen();
-    LCD_disString(1,2,"Calculate");
-    LCD_disString(1,3," Finish!");
 }
 
 void Calculate_Phase(void)
@@ -100,7 +101,184 @@ void Calculate_Phase(void)
         temp = currQ / currI;
         PhaseResult[i] = -1 * Arctan(temp);
     }
-    LCD_clearScreen();
-    LCD_disString(1,2,"Calculate");
-    LCD_disString(1,3," Finish!");
 }
+
+int convertCord_Y(int inputY)
+{
+    return Y_DEST - inputY;
+}
+
+void drawAmpCordinate(void)
+{
+    LCD_drawLine_X(X_START,X_DEST,Y_DEST,1);
+    LCD_drawLine_Y(X_START,Y_START,Y_DEST,1);
+
+    //X axis
+    LCD_drawPoints(X_DEST,Y_DEST,1);
+    LCD_drawPoints(X_DEST - 1,Y_DEST + 1,1);
+    LCD_drawPoints(X_DEST - 1,Y_DEST - 1,1);
+    LCD_drawPoints(X_DEST - 2,Y_DEST + 2,1);
+    LCD_drawPoints(X_DEST - 2,Y_DEST - 2,1);
+
+    //Y axis
+    LCD_drawPoints(X_START - 1,Y_START + 1,1);
+    LCD_drawPoints(X_START + 1,Y_START + 1,1);
+    LCD_drawPoints(X_START - 2,Y_START + 2,1);
+    LCD_drawPoints(X_START + 2,Y_START + 2,1);
+
+    //scales
+    int i = 0;
+    for(i = X_START; i <= X_DEST; )
+    {
+        LCD_drawPoints(i,Y_DEST - 1,1);
+        i += 5;
+    }
+    for(i = Y_START; i <= Y_DEST;)
+    {
+        LCD_drawPoints(X_START + 1,i,1);
+        i += 5;
+    }
+}
+
+void drawPhaseCordinate(void)
+{
+    LCD_drawLine_X(X_START,X_DEST,Y_MIDDLE,1);
+    LCD_drawLine_Y(X_START,Y_START,Y_DEST,1);
+
+    test = Y_MIDDLE;
+    //X axis
+    LCD_drawPoints(X_DEST,Y_MIDDLE,1);
+    LCD_drawPoints(X_DEST - 1,Y_MIDDLE + 1,1);
+    LCD_drawPoints(X_DEST - 1,Y_MIDDLE - 1,1);
+    LCD_drawPoints(X_DEST - 2,Y_MIDDLE + 2,1);
+    LCD_drawPoints(X_DEST - 2,Y_MIDDLE - 2,1);
+
+    //Y axis
+    LCD_drawPoints(X_START - 1,Y_START + 1,1);
+    LCD_drawPoints(X_START + 1,Y_START + 1,1);
+    LCD_drawPoints(X_START - 2,Y_START + 2,1);
+    LCD_drawPoints(X_START + 2,Y_START + 2,1);
+
+    //scales
+    int i = 0;
+    for(i = X_START; i <= X_DEST; )
+    {
+        LCD_drawPoints(i,Y_MIDDLE - 1,1);
+        i += 5;
+    }
+    for(i = Y_START; i <= Y_DEST;)
+    {
+        LCD_drawPoints(X_START + 1,i,1);
+        i += 5;
+    }
+}
+
+void drawAmpCurve_Linear(void)
+{
+    LCD_disString(1,2,"Drawing...");
+    drawAmpCordinate();
+    //find the maximum number of the results
+    int i = 0;
+    float currMax = AmpResult[0];
+    int intTempResult = 0;
+    float y_Scale_Single = 0;
+    int x_GraphPos1 = 0;
+    int y_GraphPos1 = 0;
+    int x_GraphPos2;
+    int y_GraphPos2;
+
+    for(i = 0; i < SCAN_SIZE ; i++)
+    {
+        if(AmpResult[i] > currMax)
+            currMax = AmpResult[i];
+    }
+    intTempResult = (int)currMax;
+    currMax = (float)intTempResult + 1;
+    y_Scale_Single = currMax / 60 ;
+    y_Scale = y_Scale_Single * 5;
+    x_Scale = 5;
+
+    i = 0;
+
+    for(i = 0 ; i < SCAN_SIZE ; i++)
+    {
+        x_GraphPos2 = i;
+        y_GraphPos2 = convertCord_Y((int)(AmpResult[i] / y_Scale_Single));
+        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
+        x_GraphPos1 = x_GraphPos2;
+        y_GraphPos1 = y_GraphPos2;
+    }
+    LCD_clearScreen();
+    LCD_disGraph();
+
+}
+
+
+
+void drawAmpCurve_dB(void)
+{
+    LCD_disString(1,2,"Drawing...");
+    drawAmpCordinate();
+    int i;
+    for(i = 0; i < SCAN_SIZE ; i++)
+        AmpResult_dB[i] = 20 * (float)log10((double)AmpResult[i]);
+    float currMax = AmpResult_dB[0];
+    int intTempResult = 0;
+    float y_Scale_Single = 0;
+    int x_GraphPos1 = 0;
+    int y_GraphPos1 = 0;
+    int x_GraphPos2;
+    int y_GraphPos2;
+
+    for(i = 0; i < SCAN_SIZE ; i++)
+    {
+        if(AmpResult_dB[i] > currMax)
+            currMax = AmpResult_dB[i];
+    }
+    intTempResult = (int)currMax;
+    currMax = (float)intTempResult + 1;
+    y_Scale_Single = currMax / 60 ;
+    y_Scale = y_Scale_Single * 5;
+    x_Scale = 5;
+
+    i = 0;
+
+    for(i = 0 ; i < SCAN_SIZE ; i++)
+    {
+        x_GraphPos2 = i;
+        y_GraphPos2 = convertCord_Y((int)(AmpResult_dB[i] / y_Scale_Single));
+        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
+        x_GraphPos1 = x_GraphPos2;
+        y_GraphPos1 = y_GraphPos2;
+    }
+    LCD_clearScreen();
+    LCD_disGraph();
+    
+}
+
+void drawPhaseCurve()
+{
+    LCD_disString(1,2,"Drawing...");
+    int i = 0;
+    float y_Scale_Single = 0;
+    x_Scale = 5;
+    y_Scale_Single = 360 / Y_LENGTH;
+    y_Scale = 5 * y_Scale_Single;
+    int x_GraphPos1 = 0;
+    int y_GraphPos1 = Y_MIDDLE;
+    int x_GraphPos2;
+    int y_GraphPos2;
+
+    for(i = 0; i < SCAN_SIZE; i++)
+    {
+        x_GraphPos2 = i;
+        y_GraphPos2 = convertCord_Y((int)((PhaseResult[i] + 180) / y_Scale_Single));
+        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
+        x_GraphPos1 = x_GraphPos2;
+        y_GraphPos1 = y_GraphPos2;
+    }
+    drawPhaseCordinate();
+    LCD_clearScreen();
+    LCD_disGraph();
+}
+
