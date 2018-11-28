@@ -216,6 +216,15 @@ void initLCD()
 	 LCD_disString(1,4,"                    ");
  }
 
+void LCD_BacktoStrMode(void)
+{
+	 LCD_clearCommand();
+	 WriteCommand(0x34);
+	 WriteCommand(0x34);
+	 initLCD();
+	 LCD_clearScreen();
+}
+
 //=======================================================
 //Tips: LCD_disXXX  为直接在LCD12864上进行显示的各类函数
 //		LCD_drawXXX 为修改LCD_GraphBuff的各类函数,需要在绘制完成后调用LCD_disGraph(void)将其显示在LCD12864的屏幕上
@@ -357,7 +366,6 @@ void LCD_drawPoints(int x_pos, int y_pos,uint color)
 	 int currBuff;
 	 buff_x = x_pos / 8 ;
 	 offset = x_pos % 8 ;
-	 //offset = x_pos % 8 - 1 ;
 	 buff_y = y_pos - 1 ;
 	 buff_number = buff_y * 16 +buff_x ;
 	 if(color)

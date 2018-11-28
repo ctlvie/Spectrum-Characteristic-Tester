@@ -65,5 +65,5 @@ void LCD_drawLine_X(unsigned char X0,unsigned char X1,unsigned char Y,unsigned c
 void LCD_drawLine_Y(unsigned char X,unsigned char Y0,unsigned char Y1,unsigned char Color);
 void LCD_drawLine(unsigned char X0,unsigned char Y0,unsigned char X1,unsigned char Y1,unsigned char Color);
 void initLCD();
-
+void LCD_BacktoStrMode(void);
 #endif /* LCD12864_H_ */
