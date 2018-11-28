@@ -210,10 +210,10 @@ void initLCD()
 //------------------------------------------------- 
  void LCD_clearScreen(void)
  {
-     LCD_disString(1,1,"                    ");
-     LCD_disString(1,2,"                    ");
-	 LCD_disString(1,3,"                    ");
-	 LCD_disString(1,4,"                    ");
+     LCD_disString(0,1,"                      ");
+     LCD_disString(0,2,"                      ");
+	 LCD_disString(0,3,"                      ");
+	 LCD_disString(0,4,"                      ");
  }
 
 void LCD_BacktoStrMode(void)
