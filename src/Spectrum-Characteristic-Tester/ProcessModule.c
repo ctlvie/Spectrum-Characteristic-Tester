@@ -23,7 +23,8 @@ Date		By			Version		Description
 #include <math.h>
 
 extern unsigned long testCurrFreq;
-
+extern volatile int Button_S1;
+extern volatile int Button_S2;
 
 extern float ScanResult_I[SCAN_SIZE];
 extern float ScanResult_Q[SCAN_SIZE];
@@ -175,6 +176,7 @@ void drawPhaseCordinate(void)
 
 void drawAmpCurve_Linear(void)
 {
+    LCD_clearScreen();
     LCD_disString(1,2,"Drawing...");
     drawAmpCordinate();
     //find the maximum number of the results
@@ -282,3 +284,58 @@ void drawPhaseCurve()
     LCD_disGraph();
 }
 
+void showMoreInfo(int mode)
+{
+    LCD_BacktoStrMode();
+    unsigned char x_Value[5];
+    unsigned char y_Value[5];
+    convertFloattoCharArray(x_Value,5,5.0,3);
+    convertFloattoCharArray(y_Value,5,y_Scale,3);
+    LCD_disString(0,1,"X:");
+    LCD_disString(0,2,"Y:");
+    LCD_disString(1,1,x_Value);
+    LCD_disString(1,2,y_Value);
+    if(mode == MODE_AMP_LN)
+    {
+        LCD_disString(4,1,"kHz/div");
+        LCD_disString(4,2,"V/div");
+    }
+    else if(mode == MODE_AMP_DB)
+    {
+        LCD_disString(4,1,"kHz/div");
+        LCD_disString(4,2,"dB/div");
+    }
+    else
+    {
+        LCD_disString(4,1,"kHz/div");
+        LCD_disString(4,2,"бу/divx");
+    }
+}
+
+void showCurve(int mode)
+{
+    if(mode == MODE_AMP_LN)
+        drawAmpCurve_Linear();
+    else if(mode == MODE_AMP_DB)
+        drawAmpCurve_dB();
+    else 
+        drawPhaseCurve();
+disCurve:   LCD_clearScreen();
+    LCD_disGraph();
+    while(1)
+    {
+        if(Button_S2)
+        {
+            Button_S2 = 0;
+            showMoreInfo(mode);
+            while(1)
+            {
+                if(Button_S2)
+                {
+                    Button_S2 = 0;
+                    goto disCurve;
+                }
+            }
+        }
+    }
+}

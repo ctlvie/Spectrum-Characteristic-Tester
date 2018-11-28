@@ -30,8 +30,9 @@ Date		By			Version		Description
 #define Y_MIDDLE    32  //Y_START + (Y_LENGTH / 2)
 
 
-#define MODE_AMP    1
-#define MODE_PHASE  2
+#define MODE_AMP_LN    1
+#define MODE_AMP_DB    2
+#define MODE_PHASE     3
 void ScanFreq(void);
 void Calculate_Amp(void);
 void Calculate_Phase(void);
@@ -41,5 +42,5 @@ void drawPhaseCordinate(void);
 void drawAmpCurve_Linear(void);
 void drawAmpCurve_dB(void);
 void drawPhaseCurve();
-
+void showCurve(int mode);
 #endif /* PROCESSMODULE_H_ */
