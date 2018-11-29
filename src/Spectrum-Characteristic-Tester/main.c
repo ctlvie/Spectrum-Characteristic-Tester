@@ -145,6 +145,7 @@ startInput:
     LCD_disString(1,3,arrayBuff); 
     for(currInputBits = 0; currInputBits <= 3; currInputBits ++)
     {
+        LCD_disString(currInputBits + 1,4,".");
         arrayBuff[currInputBits] = getKeyValue();
         LCD_disString(1,3,arrayBuff);
     }
@@ -208,6 +209,18 @@ void testScanFreq(void)
   showCurve(MODE_AMP_LN);
 }
 
+void testScanForever(void)
+{
+  initAD9854();
+  initADC(0);
+  initLCD();
+  initButtons();
+  while(1)
+  {
+    ScanFreq();
+  }
+}
+
 void testPointFreq(void)
 {
   initAD9854();
@@ -224,7 +237,6 @@ void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //¹Ø±Õ¿´ÃÅ¹·
   testPointFreq();
-  //testDDS();
 }
 
 /*

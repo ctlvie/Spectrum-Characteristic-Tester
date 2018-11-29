@@ -51,7 +51,7 @@ void ScanFreq(void)
     stepFreq = STEP_FREQ;
     while(currFreq < 1000000)
     {
-        setSinOutput(currFreq,4096);
+        setSinOutput(currFreq,4090);
       //  DELAY_PROCESS_MS(5);
         testCurrFreq = currFreq;
         initADC(0);
@@ -81,8 +81,20 @@ extern unsigned long test1;
 void PointFreq(void)
 {
     int inputFreqValue = 0;
-    inputFreqValue = inputNum();
-    unsigned long tempFreq = (unsigned long)inputFreqValue ;
+    int isOutOfRange = 1;
+    do{
+        inputFreqValue = inputNum();
+        if(inputFreqValue > 1000)
+        {
+            LCD_clearScreen();
+            LCD_disString(1,2,"Out of range!");
+            DELAY_PROCESS_MS(300);
+            isOutOfRange = 1;
+        }
+        else
+            isOutOfRange = 0;
+    }while(isOutOfRange);
+    unsigned long tempFreq = (unsigned long)inputFreqValue * 1000 ;
     setSinOutput(tempFreq, 4090);
     DELAY_PROCESS_MS(10);
     initADC(0);
