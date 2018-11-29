@@ -351,6 +351,15 @@ void LCD_disGraph(void)
 	DELAY_LCD_MS(20);
 }
 
+void LCD_clearBuff(void)
+{
+	int i;
+	for (i = 0; i < 1024; i++)
+	{
+		LCD_GraphBuff[i] = 0x00;
+	}
+}
+
 
 //-------------------------------------------------
 //Name:        	LCD_drawPoints(int x_pos, int y_pos,uint color) 

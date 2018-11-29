@@ -56,6 +56,7 @@ void WriteCommand(unsigned char cmdcode);
 void WriteData(unsigned char Dispdata);
 void LCD_clearCommand(void);
 void LCD_clearScreen(void);
+void LCD_clearBuff(void);
 void LCD_disString(unsigned int x,unsigned int y,unsigned char* s);
 void LCD_disGBStr(unsigned char *LCD_ChineseBuff);
 void LCD_disPic(uchar *xc_PicArea);
