@@ -175,6 +175,7 @@ int convertCord_Y(int inputY)
 
 void drawAmpCordinate(void)
 {
+    LCD_clearBuff();
     LCD_drawLine_X(X_START,X_DEST,Y_DEST,1);
     LCD_drawLine_Y(X_START,Y_START,Y_DEST,1);
 
@@ -207,6 +208,7 @@ void drawAmpCordinate(void)
 
 void drawPhaseCordinate(void)
 {
+    LCD_clearBuff();
     LCD_drawLine_X(X_START,X_DEST,Y_MIDDLE,1);
     LCD_drawLine_Y(X_START,Y_START,Y_DEST,1);
 
@@ -240,6 +242,7 @@ void drawPhaseCordinate(void)
 
 void drawAmpCurve_Linear(void)
 {
+    LCD_clearBuff();
     LCD_clearScreen();
     LCD_disString(1,2,"Drawing...");
     drawAmpCordinate();
@@ -283,6 +286,7 @@ void drawAmpCurve_Linear(void)
 
 void drawAmpCurve_dB(void)
 {
+    LCD_clearBuff();
     LCD_disString(1,2,"Drawing...");
     drawAmpCordinate();
     int i;
@@ -324,6 +328,7 @@ void drawAmpCurve_dB(void)
 
 void drawPhaseCurve()
 {
+    LCD_clearBuff();
     LCD_disString(1,2,"Drawing...");
     int i = 0;
     float y_Scale_Single = 0;
@@ -353,7 +358,7 @@ void showMoreInfo(int mode)
     LCD_BacktoStrMode();
     unsigned char x_Value[5];
     unsigned char y_Value[5];
-    convertFloattoCharArray(x_Value,5,5.0,3);
+    convertFloattoCharArray(x_Value,5,50.0,3);
     convertFloattoCharArray(y_Value,5,y_Scale,3);
     LCD_disString(0,1,"X:");
     LCD_disString(0,2,"Y:");
@@ -401,6 +406,56 @@ disCurve:   LCD_clearScreen();
                 }
             }
         }
+        if(Button_S1)
+        {
+            Button_S1 = 0;
+            break ;
+        }
     }
+}
+
+void ScanOutput(void)
+{
+    unsigned long currFreq = 1000;
+    unsigned long stepFreq = 0;
+    unsigned char displayCurrFreq_char[7] = {'0','0','0','0','0','0','0'};
+    unsigned int displayCurrFreq = 0;
+    LCD_clearScreen();
+    LCD_disString(0,2,"Selcect Scan Step:");
+    LCD_disString(0,3,"1. 10Hz");
+    LCD_disString(0,4,"2. 1kHz");
+    int isSelected = 0;
+    do{
+        if(Button_S1)
+        {
+            Button_S1 = 0;
+            stepFreq = 10;
+            isSelected = 1;
+        }
+        else if(Button_S2)
+        {
+            Button_S2 = 0;
+            stepFreq = 1000;
+            isSelected = 1;
+        }
+        else
+            isSelected = 0;
+    }while(!isSelected);
+    isSelected = 0;
+    LCD_clearScreen();
+    LCD_disString(1,2,"Scaning ...");
+    while(currFreq < 1000000)
+    {
+        setSinOutput(currFreq,4090);
+        DELAY_PROCESS_MS(1);
+        displayCurrFreq = (int)currFreq;
+        convertInttoCharArray(displayCurrFreq_char,displayCurrFreq,7);
+        LCD_disString(0,3,displayCurrFreq_char);
+        LCD_disString(7,3,"Hz");
+        currFreq += stepFreq;
+    }
+    LCD_clearScreen();
+    LCD_disString(1,2,"Scan Finish!");
+    DELAY_PROCESS_MS(10);
 }
 

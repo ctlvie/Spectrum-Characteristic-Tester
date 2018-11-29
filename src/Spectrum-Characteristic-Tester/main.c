@@ -233,13 +233,18 @@ void testPointFreq(void)
 
 float test = 0;
 unsigned long test1 = 0;
+
+/*
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-  testScanFreq();
+   test = 0;
+   LCD_clearBuff();
+   test = 1;
+  testLCD();
 }
+*/
 
-/*
 void main(void)
 {
 	
@@ -248,60 +253,23 @@ void main(void)
   initButtons();
   initBoard();
   initAD9854();
-  initADC();
-  LCD_disString(1,1,"1.Amplitude");
-  LCD_disString(1,2,"2.Phase");
-  LED1_ON;
-  LED2_ON;
+
+  int isSelected = 0;
+  //LCD_BacktoStrMode();
+  LCD_disString(1,1,"1.SignalOutput");
+  LCD_disString(1,2,"2.Measure"); 
   while(1)
   {
     if(Button_S1)
     {
       Button_S1 = 0;
-      LED1_OFF;
-      LCD_clearScreen();
-      LCD_disString(1,1,"Amplitude Test");
-      LCD_disString(1,2,"1.Scan");
-      LCD_disString(1,3,"2.Point");
-      while(1)
-      {
-        if(Button_S1)
-        {
-          Button_S1 = 0;
-          LCD_clearScreen();
-          LCD_disString(1,1,"Scan Method");
-          LCD_disString(0,3,"Set Step Freq");
-          LCD_disString(0,4,"S1:10Hz S2:1kHz");
-          while(1)
-          {
-            if(Button_S1)
-            {
-              Button_S1 = 0;
-              LCD_clearScreen();
-              LCD_disString(1,2,"10Hz");
-            }
-            if(Button_S2)
-            {
-              Button_S2 = 0;
-              LCD_clearScreen();
-              LCD_disString(1,2,"1kHz");
-            }
-          }
-        }
-        if(Button_S2)
-        {
-          Button_S2 = 0;
-          LCD_clearScreen();
-          LCD_disString(1,2,"Point Method");
-        }
-      }
+      ScanOutput();
     }
     if(Button_S2)
     {
       Button_S2 = 0;
-      LED2_OFF;
       LCD_clearScreen();
-      LCD_disString(1,1,"Phase Test");
+      LCD_disString(1,1,"Spectrum: ");
       LCD_disString(1,2,"1.Scan");
       LCD_disString(1,3,"2.Point");
       while(1)
@@ -310,23 +278,30 @@ void main(void)
         {
           Button_S1 = 0;
           LCD_clearScreen();
-          LCD_disString(1,1,"Scan Method");
-          LCD_disString(0,3,"Set Step Freq");
-          LCD_disString(0,4,"S1:10Hz S2:1kHz");
+          ScanFreq();
+          Calculate_Amp();
+          Calculate_Phase();
           while(1)
           {
-            if(Button_S1)
-            {
-              Button_S1 = 0;
-              LCD_clearScreen();
-              LCD_disString(1,2,"10Hz");
-            }
-            if(Button_S2)
-            {
-              Button_S2 = 0;
-              LCD_clearScreen();
-              LCD_disString(1,2,"1kHz");
-            }
+            LCD_BacktoStrMode();
+            LCD_clearScreen();
+            LCD_disString(1,2,"1.Amp Curve");
+            LCD_disString(1,3,"2.Phase Curve");
+            do{
+              if(Button_S1)
+              {
+                isSelected = MODE_AMP_LN;
+                Button_S1 = 0;
+              }
+              else if (Button_S2)
+              {
+                isSelected = MODE_PHASE;
+                Button_S2 = 0;
+              }
+              else
+                isSelected = 0;
+            }while(!isSelected);
+            showCurve(isSelected);
           }
         }
         if(Button_S2)
@@ -334,61 +309,13 @@ void main(void)
           Button_S2 = 0;
           LCD_clearScreen();
           LCD_disString(1,2,"Point Method");
+          DELAY_PROCESS_MS(100);
+          PointFreq();
+          Calculate_PointFreq();
         }
       }
     }
   } 
 }
-*/
-
-/*
-int testButton1 = 0;
-int testButton2 = 0;
-
-#pragma vector = PORT1_VECTOR
-__interrupt void Port_1(void)
-{
-  stateOfS1 = 1;
-  P1IFG &= ~BIT1;
-  testButton1 ++;
-}
-
-#pragma vector = PORT2_VECTOR
-__interrupt void Port_2(void)
-{
-  stateOfS2 = 1;
-  P2IFG &= ~BIT1;
-  testButton2 ++;
-}
-*/
 
 
-
-/* AD9854测试用main函数
-int main( void )
-{
-
-   double f = 1000000.0;
-   unsigned int i;
-   // Stop watchdog timer to prevent time out reset
-   WDTCTL = WDTPW + WDTHOLD;
-
-   AD9854_Init();            //波形发生器初始化
-
-   while(1){
-     for(i=1;i<60;i++){
-
-        AD9854_SetSine(f*i,4000); //产生xxMHz正弦信号
-        DelayXms(8000);
-     }
-  }
-  return 0;
-}
-void DelayXms(unsigned int i){
-    unsigned int j;
-    for( ; i>0; i--){
-      for(j=0;j<200;j++);
-    }
-
-}
-*/
