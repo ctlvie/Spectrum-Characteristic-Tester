@@ -37,6 +37,7 @@ void ScanFreq(void);
 void PointFreq(void);
 void Calculate_Amp(void);
 void Calculate_Phase(void);
+void Calculate_PointFreq(void);
 int convertCord_Y(int inputY);
 void drawAmpCordinate(void);
 void drawPhaseCordinate(void);

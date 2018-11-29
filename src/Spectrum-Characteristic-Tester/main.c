@@ -185,9 +185,13 @@ unsigned long testCurrFreq;
 
 float ScanResult_I[SCAN_SIZE];
 float ScanResult_Q[SCAN_SIZE];
-float AmpResult[SCAN_SIZE];
-float AmpResult_dB[SCAN_SIZE];
-float PhaseResult[SCAN_SIZE];
+float ScanAmpResult[SCAN_SIZE];
+float ScanAmpResult_dB[SCAN_SIZE];
+float ScanPhaseResult[SCAN_SIZE];
+float PointResult_I;
+float PointResult_Q;
+float PointAmpResult;
+float PointPhaseResult;
 float x_Scale;
 float y_Scale;
 
@@ -211,6 +215,7 @@ void testPointFreq(void)
   initLCD();
   initButtons();
   PointFreq();
+  Calculate_PointFreq();
 }
 
 float test = 0;

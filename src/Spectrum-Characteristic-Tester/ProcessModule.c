@@ -30,9 +30,13 @@ extern volatile int Button_S2;
 
 extern float ScanResult_I[SCAN_SIZE];
 extern float ScanResult_Q[SCAN_SIZE];
-extern float AmpResult[SCAN_SIZE];
-extern float AmpResult_dB[SCAN_SIZE];
-extern float PhaseResult[SCAN_SIZE];
+extern float ScanAmpResult[SCAN_SIZE];
+extern float ScanAmpResult_dB[SCAN_SIZE];
+extern float ScanPhaseResult[SCAN_SIZE];
+extern float PointResult_I;
+extern float PointResult_Q;
+extern float PointAmpResult;
+extern float PointPhaseResult;
 extern float x_Scale;
 extern float y_Scale;
 extern float test;
@@ -80,6 +84,11 @@ void PointFreq(void)
     inputFreqValue = inputNum();
     unsigned long tempFreq = (unsigned long)inputFreqValue ;
     setSinOutput(tempFreq, 4090);
+    DELAY_PROCESS_MS(10);
+    initADC(0);
+    PointResult_I = getADCValue();
+    initADC(1);
+    PointResult_Q = getADCValue();
 }
 
 void Calculate_Amp(void)
@@ -94,7 +103,7 @@ void Calculate_Amp(void)
         currI = ScanResult_I[i];
         currQ = ScanResult_Q[i];
         temp = (currI * currI) + (currQ * currQ);
-        AmpResult[i] = 2 * SqrtByNewton(temp);
+        ScanAmpResult[i] = 2 * SqrtByNewton(temp);
     }
 }
 
@@ -110,8 +119,32 @@ void Calculate_Phase(void)
         currI = ScanResult_I[i];
         currQ = ScanResult_Q[i];
         temp = currQ / currI;
-        PhaseResult[i] = -1 * Arctan(temp);
+        ScanPhaseResult[i] = -1 * Arctan(temp);
     }
+}
+
+void Calculate_PointFreq(void)
+{
+    float currI, currQ;
+    float temp = 0;
+    unsigned char AmpValue[4];
+    unsigned char PhaseValue[4];
+    LCD_clearScreen();
+    LCD_disString(1,2,"Calculating...");
+    currI = PointResult_I;
+    currQ = PointResult_Q;
+    temp = (currI * currI) + (currQ * currQ);
+    PointAmpResult = 2 * SqrtByNewton(temp);
+    temp = 0;
+    temp = currQ / currI;
+    PointPhaseResult = -1 * Arctan(temp);
+    convertFloattoCharArray(AmpValue,4,PointAmpResult,4);
+    convertFloattoCharArray(PhaseValue,4,PointPhaseResult,4);
+    LCD_clearScreen();
+    LCD_disString(1,2,AmpValue);
+    LCD_disString(3,2,"V");
+    LCD_disString(1,3,PhaseValue);
+    LCD_disString(3,3,"бу");
 }
 
 int convertCord_Y(int inputY)
@@ -191,7 +224,7 @@ void drawAmpCurve_Linear(void)
     drawAmpCordinate();
     //find the maximum number of the results
     int i = 0;
-    float currMax = AmpResult[0];
+    float currMax = ScanAmpResult[0];
     int intTempResult = 0;
     float y_Scale_Single = 0;
     int x_GraphPos1 = 0;
@@ -201,8 +234,8 @@ void drawAmpCurve_Linear(void)
 
     for(i = 0; i < SCAN_SIZE ; i++)
     {
-        if(AmpResult[i] > currMax)
-            currMax = AmpResult[i];
+        if(ScanAmpResult[i] > currMax)
+            currMax = ScanAmpResult[i];
     }
     intTempResult = (int)currMax;
     currMax = (float)intTempResult + 1;
@@ -215,7 +248,7 @@ void drawAmpCurve_Linear(void)
     for(i = 0 ; i < SCAN_SIZE ; i++)
     {
         x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)(AmpResult[i] / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)(ScanAmpResult[i] / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
@@ -233,8 +266,8 @@ void drawAmpCurve_dB(void)
     drawAmpCordinate();
     int i;
     for(i = 0; i < SCAN_SIZE ; i++)
-        AmpResult_dB[i] = 20 * (float)log10((double)AmpResult[i]);
-    float currMax = AmpResult_dB[0];
+        ScanAmpResult_dB[i] = 20 * (float)log10((double)ScanAmpResult[i]);
+    float currMax = ScanAmpResult_dB[0];
     int intTempResult = 0;
     float y_Scale_Single = 0;
     int x_GraphPos1 = 0;
@@ -244,8 +277,8 @@ void drawAmpCurve_dB(void)
 
     for(i = 0; i < SCAN_SIZE ; i++)
     {
-        if(AmpResult_dB[i] > currMax)
-            currMax = AmpResult_dB[i];
+        if(ScanAmpResult_dB[i] > currMax)
+            currMax = ScanAmpResult_dB[i];
     }
     intTempResult = (int)currMax;
     currMax = (float)intTempResult + 1;
@@ -258,7 +291,7 @@ void drawAmpCurve_dB(void)
     for(i = 0 ; i < SCAN_SIZE ; i++)
     {
         x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)(AmpResult_dB[i] / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)(ScanAmpResult_dB[i] / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
@@ -284,7 +317,7 @@ void drawPhaseCurve()
     for(i = 0; i < SCAN_SIZE; i++)
     {
         x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)((PhaseResult[i] + 180) / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)((ScanPhaseResult[i] + 180) / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
