@@ -290,8 +290,24 @@ void main(void)
             do{
               if(Button_S1)
               {
-                isSelected = MODE_AMP_LN;
                 Button_S1 = 0;
+                LCD_clearScreen();
+                LCD_disString(1,2,"1.dB");
+                LCD_disString(1,3,"2.Linear");
+                do{
+                  if(Button_S1)
+                  {
+                    isSelected = MODE_AMP_DB;
+                    Button_S1 = 0;
+                  }
+                  else if(Button_S2)
+                  {
+                    isSelected = MODE_AMP_LN;
+                    Button_S2 = 0;
+                  }
+                  else
+                    isSelected = 0;
+                }while(!isSelected);
               }
               else if (Button_S2)
               {

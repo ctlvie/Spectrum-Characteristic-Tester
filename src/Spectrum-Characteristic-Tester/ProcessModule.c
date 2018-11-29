@@ -43,10 +43,10 @@ extern float test;
 
 float getCorrectValue(float input)
 {
-    //float t;
-    //t = (input - 2) / 3;
-    //return t;
-    return input;
+    float t;
+    t = (input - 2) / 3;
+    return t;
+    //return input;
 }
 
 void ScanFreq(void)
@@ -249,7 +249,7 @@ void drawAmpCurve_Linear(void)
     //find the maximum number of the results
     int i = 0;
     float currMax = ScanAmpResult[0];
-    int intTempResult = 0;
+    //int intTempResult = 0;
     float y_Scale_Single = 0;
     int x_GraphPos1 = 0;
     int y_GraphPos1 = 0;
@@ -261,9 +261,9 @@ void drawAmpCurve_Linear(void)
         if(ScanAmpResult[i] > currMax)
             currMax = ScanAmpResult[i];
     }
-    intTempResult = (int)currMax;
-    currMax = (float)intTempResult + 1;
-    y_Scale_Single = currMax / 60 ;
+    //intTempResult = (int)currMax;
+    //currMax = (float)intTempResult + 1;
+    y_Scale_Single = currMax / 50 ;
     y_Scale = y_Scale_Single * 5;
     x_Scale = 5;
 
