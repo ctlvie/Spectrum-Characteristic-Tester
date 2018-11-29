@@ -22,6 +22,8 @@ Date		By			Version		Description
 #include <stdlib.h>
 #include <math.h>
 
+extern int  inputNum(void);
+
 extern unsigned long testCurrFreq;
 extern volatile int Button_S1;
 extern volatile int Button_S2;
@@ -71,6 +73,14 @@ void ScanFreq(void)
     LCD_disString(1,2,"Scan Finish!");
 }
 
+extern unsigned long test1;
+void PointFreq(void)
+{
+    int inputFreqValue = 0;
+    inputFreqValue = inputNum();
+    unsigned long tempFreq = (unsigned long)inputFreqValue ;
+    setSinOutput(tempFreq, 4090);
+}
 
 void Calculate_Amp(void)
 {
@@ -339,3 +349,4 @@ disCurve:   LCD_clearScreen();
         }
     }
 }
+

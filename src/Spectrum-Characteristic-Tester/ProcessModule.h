@@ -34,6 +34,7 @@ Date		By			Version		Description
 #define MODE_AMP_DB    2
 #define MODE_PHASE     3
 void ScanFreq(void);
+void PointFreq(void);
 void Calculate_Amp(void);
 void Calculate_Phase(void);
 int convertCord_Y(int inputY);

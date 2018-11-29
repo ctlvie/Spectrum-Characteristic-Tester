@@ -67,18 +67,27 @@ void testADC(void)
 void testLCD(void)
 {
   initLCD();
+  initButtons();
   while(1)
 	{
-      //LCD_drawLine(5,60,120,5,1);
-      //LCD_disGraph();
-      LCD_disString(1,1,"HELLO WORLD!");
+      LCD_drawLine(5,60,120,5,1);
+      LCD_disGraph();
+      if(Button_S2)
+      {
+        Button_S2 = 0;
+        LCD_BacktoStrMode();
+        while(1)
+        { 
+          LCD_disString(1,1,"HELLO WORLD!");
+        }
+      }
   }
 }
 
 void testDDS(void)
 {
   initAD9854();
-  setSinOutput(200,4090);
+  setSinOutput(1500,4090);
 }
 
 
@@ -151,6 +160,9 @@ startInput:
       if(Button_S2)
       {
         Button_S2 = 0;
+        LCD_clearScreen();
+        LCD_disString(1,2,"Confirmed:");
+        LCD_disString(1,3,arrayBuff);
         return inputNumResult;
       }
     }
@@ -174,7 +186,11 @@ unsigned long testCurrFreq;
 float ScanResult_I[SCAN_SIZE];
 float ScanResult_Q[SCAN_SIZE];
 float AmpResult[SCAN_SIZE];
+float AmpResult_dB[SCAN_SIZE];
 float PhaseResult[SCAN_SIZE];
+float x_Scale;
+float y_Scale;
+
 
 void testScanFreq(void)
 {
@@ -183,13 +199,27 @@ void testScanFreq(void)
   initLCD();
   initButtons();
   ScanFreq();
+  Calculate_Amp();
   Calculate_Phase();
+  showCurve(MODE_AMP_LN);
 }
 
+void testPointFreq(void)
+{
+  initAD9854();
+  initADC(0);
+  initLCD();
+  initButtons();
+  PointFreq();
+}
+
+float test = 0;
+unsigned long test1 = 0;
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-  testScanFreq();
+  testPointFreq();
+  //testDDS();
 }
 
 /*
