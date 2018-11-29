@@ -203,7 +203,7 @@ uchar getKeyValue(void) {
   uchar KeyValue;
   do {
     KeyValue = getKeyCdnt();
-  }while ( (KeyValue == 14) ||(KeyValue == 24) ||(KeyValue == 34) ||(KeyValue == 44)
+  }while ( (KeyValue == 14) ||(KeyValue == 34) ||(KeyValue == 44)
           ||(KeyValue == 41) ||(KeyValue == 43) ||(KeyValue == 44) ); //屏蔽不需要的键值
   if (KeyValue == 11) return '1';  
   else if (KeyValue == 12) return '4';
