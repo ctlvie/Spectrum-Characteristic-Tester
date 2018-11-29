@@ -236,7 +236,7 @@ unsigned long test1 = 0;
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-  testPointFreq();
+  testScanFreq();
 }
 
 /*

@@ -45,4 +45,5 @@ void drawAmpCurve_Linear(void);
 void drawAmpCurve_dB(void);
 void drawPhaseCurve();
 void showCurve(int mode);
+float getCorrectValue(float input);
 #endif /* PROCESSMODULE_H_ */

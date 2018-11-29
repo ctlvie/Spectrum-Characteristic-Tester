@@ -40,6 +40,15 @@ extern float PointPhaseResult;
 extern float x_Scale;
 extern float y_Scale;
 extern float test;
+
+float getCorrectValue(float input)
+{
+    //float t;
+    //t = (input - 2) / 3;
+    //return t;
+    return input;
+}
+
 void ScanFreq(void)
 {
     unsigned long currFreq = 1000;
@@ -52,12 +61,12 @@ void ScanFreq(void)
     while(currFreq < 1000000)
     {
         setSinOutput(currFreq,4090);
-      //  DELAY_PROCESS_MS(5);
+        DELAY_PROCESS_MS(1);
         testCurrFreq = currFreq;
         initADC(0);
-        ScanResult_I[currSchedule] = getADCValue();
+        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
         initADC(1);
-        ScanResult_Q[currSchedule] = getADCValue();
+        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
 
         convertInttoCharArray(currPercent_char,currSchedule,2);
         LCD_disString(3,3,currPercent_char);
