@@ -231,17 +231,23 @@ void testPointFreq(void)
   Calculate_PointFreq();
 }
 
-float test = 0;
+int test = 0;
 unsigned long test1 = 0;
+float testMax = 0;
+float testMin = 0;
+int indexOfNearest = 0;
 
 /*
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
    test = 0;
-   LCD_clearBuff();
-   test = 1;
-  testLCD();
+   initAD9854();
+   initLCD();
+   ScanFreq();
+   Calculate_Amp();
+   Calculate_Phase();
+   showCurve(MODE_AMP_DB);
 }
 */
 
@@ -333,5 +339,6 @@ void main(void)
     }
   } 
 }
+
 
 
