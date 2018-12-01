@@ -203,16 +203,16 @@ uchar getKeyValue(void) {
   uchar KeyValue;
   do {
     KeyValue = getKeyCdnt();
-  }while ( (KeyValue == 14) ||(KeyValue == 34) ||(KeyValue == 44)
-          ||(KeyValue == 41) ||(KeyValue == 43) ||(KeyValue == 44) ); //屏蔽不需要的键值
-  if (KeyValue == 11) return '1';  
-  else if (KeyValue == 12) return '4';
-  else if (KeyValue == 13) return '7';
-  else if (KeyValue == 21) return '2';
-  else if (KeyValue == 22) return '5';
-  else if (KeyValue == 23) return '8';
-  else if (KeyValue == 31) return '3';
-  else if (KeyValue == 32) return '6';
-  else if (KeyValue == 33) return '9';
+  }while ( (KeyValue == 11) ||(KeyValue == 21) ||(KeyValue == 31)
+          ||(KeyValue == 41) ||(KeyValue == 42) ||(KeyValue == 44) ); //屏蔽不需要的键值
+  if (KeyValue == 14) return '1';  
+  else if (KeyValue == 24) return '4';
+  else if (KeyValue == 34) return '7';
+  else if (KeyValue == 13) return '2';
+  else if (KeyValue == 23) return '5';
+  else if (KeyValue == 33) return '8';
+  else if (KeyValue == 12) return '3';
+  else if (KeyValue == 22) return '6';
+  else if (KeyValue == 32) return '9';
   else return '0';
 }

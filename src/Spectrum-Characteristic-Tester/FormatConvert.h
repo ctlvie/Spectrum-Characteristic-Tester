@@ -22,4 +22,5 @@ void convertInttoCharArray(unsigned char* outputChar, unsigned int InputInt, uns
 float abs_f(float x);
 float SqrtByNewton(float x);
 float Arctan(float input);
+int getNearIndex(float value,float array[],int size);
 #endif /* FORMATCONVERT_H_ */

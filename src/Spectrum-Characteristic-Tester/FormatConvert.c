@@ -146,3 +146,38 @@ float Arctan(float input)
 	output = output * 180 / 3.1415;
 	return output;
 }
+
+int getNearIndex(float value,float array[],int size)
+{
+    int ret_index;                        /* 结果索引 */
+    int mid_index;                        /* 中位游标 */
+    int left_index;                       /* 左位游标 */
+    int right_index;                      /* 右位游标 */
+    float left_abs;                       /* 左位的值与目标值之间的差的绝对值 */
+    float right_abs;                      /* 右位的值与目标值之间的差的绝对值 */
+
+    ret_index = 0;
+    left_index = 0;
+    right_index = size - 1;    
+    mid_index = 0;
+    left_abs = 0;
+    right_abs = 0;
+
+    while(left_index != right_index){
+        mid_index = (right_index + left_index) / 2;
+        if (value <= array[mid_index]) {
+            right_index = mid_index;
+        } else {
+            left_index = mid_index;
+        }
+        if (right_index - left_index < 2) {
+            break;
+        }
+    }
+
+    left_abs = fabs(array[left_index] - value);
+    right_abs = fabs(array[right_index] - value);
+    ret_index = right_abs <= left_abs ? right_index : left_index;
+
+    return ret_index;
+}

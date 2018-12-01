@@ -47,4 +47,5 @@ void drawPhaseCurve();
 void showCurve(int mode);
 float getCorrectValue(float input);
 void ScanOutput(void);
+void PointOutput(void);
 #endif /* PROCESSMODULE_H_ */

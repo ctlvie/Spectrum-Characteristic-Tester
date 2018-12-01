@@ -42,7 +42,7 @@ float ADCResult1 = 0;
 int t = 0;
 volatile int Button_S1;
 volatile int Button_S2;
-
+volatile int Button_S3;
 
 void testADC(void)
 {
@@ -111,16 +111,20 @@ void testButton(void)
     if(Button_S1)
     {
       Button_S1 = 0;
-      P1OUT ^= BIT0;
       testButton1 ++;
       LCD_disString(testButton1,1,"A");
     }
     if(Button_S2)
     {
       Button_S2 = 0;
-      P1OUT ^= BIT0;
       testButton2 ++;
       LCD_disString(testButton2,2,"B");
+    }
+    if(Button_S3)
+    {
+      Button_S3 = 0;
+      testButton2 ++;
+      LCD_disString(testButton2,3,"C");
     }
 
   }
@@ -215,9 +219,48 @@ void testScanForever(void)
   initADC(0);
   initLCD();
   initButtons();
+  unsigned char TEST_ADCValue0[8];
+  unsigned char TEST_ADCValue1[8];
+  unsigned long currFreq = 1000;
+  unsigned long stepFreq = 0;
+  unsigned char currPercent_char[2] = {'0','0'};
+  unsigned int currSchedule = 0;
   while(1)
   {
-    ScanFreq();
+    currFreq = 1000;
+    stepFreq = STEP_FREQ;
+    currSchedule = 0;
+    while(currFreq < 1000000)
+    {
+        setSinOutput(currFreq,4090);
+        DELAY_PROCESS_MS(1);
+        testCurrFreq = currFreq;
+        initADC(0);
+        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
+        ADCResult0 = getADCValue();
+        convertFloattoCharArray(TEST_ADCValue0,8,ADCResult0,5);
+        LCD_disString(1,1,TEST_ADCValue0);
+        initADC(1);
+        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
+        ADCResult1 = getADCValue();
+        convertFloattoCharArray(TEST_ADCValue1,8,ADCResult1,5);
+        LCD_disString(1,2,TEST_ADCValue1);
+        convertInttoCharArray(currPercent_char,currSchedule,2);
+        LCD_disString(3,3,currPercent_char);
+        LCD_disString(4,3," %");
+        currFreq += stepFreq;
+        currSchedule++;
+        if(Button_S3)
+        {
+          break ; 
+        }
+    }
+    currFreq = 1000;
+    if(Button_S3)
+    {
+      Button_S3 = 0;
+      break;
+    }
   }
 }
 
@@ -236,7 +279,15 @@ unsigned long test1 = 0;
 float testMax = 0;
 float testMin = 0;
 int indexOfNearest = 0;
-
+float cutOffFreq1;
+float cutOffFreq2;
+/*
+void main(void)
+{
+     WDTCTL = WDTPW + WDTHOLD; //¹Ø±Õ¿´ÃÅ¹·
+     testButton();
+}
+*/
 /*
 void main(void)
 {
@@ -251,6 +302,7 @@ void main(void)
 }
 */
 
+unsigned int isExittoMenu = 0;
 void main(void)
 {
 	
@@ -260,16 +312,39 @@ void main(void)
   initBoard();
   initAD9854();
 
+start: LCD_BacktoStrMode();
+  LCD_clearScreen();
   int isSelected = 0;
   //LCD_BacktoStrMode();
-  LCD_disString(1,1,"1.SignalOutput");
-  LCD_disString(1,2,"2.Measure"); 
+  LCD_disString(1,2,"1.SignalOutput");
+  LCD_disString(1,3,"2.Measure"); 
   while(1)
   {
     if(Button_S1)
     {
       Button_S1 = 0;
-      ScanOutput();
+      LCD_clearScreen();
+      while(1)
+      {
+        LCD_disString(1,2,"1.Scan Output");
+        LCD_disString(1,3,"2.Point Output");
+        if(Button_S1)
+        {
+          Button_S1 = 0;
+          ScanOutput();
+        }
+        if(Button_S2)
+        {
+          Button_S2 = 0;
+          PointOutput();
+        }
+         if(Button_S3)
+        {
+          Button_S3 = 0;
+          DELAY_PROCESS_MS(10);
+          goto start;
+        } 
+      }
     }
     if(Button_S2)
     {
@@ -324,6 +399,7 @@ void main(void)
                 isSelected = 0;
             }while(!isSelected);
             showCurve(isSelected);
+            goto start;
           }
         }
         if(Button_S2)
@@ -334,11 +410,24 @@ void main(void)
           DELAY_PROCESS_MS(100);
           PointFreq();
           Calculate_PointFreq();
+          while(1)
+          {
+            if(Button_S3)
+            {
+              Button_S3 = 0;
+              goto start;
+            }
+          }
         }
       }
     }
+    if(Button_S3)
+    {
+      Button_S3 = 0;
+      testScanForever();
+      goto start;
+    }
   } 
 }
-
 
 

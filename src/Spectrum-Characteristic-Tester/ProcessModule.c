@@ -27,7 +27,9 @@ extern int  inputNum(void);
 extern unsigned long testCurrFreq;
 extern volatile int Button_S1;
 extern volatile int Button_S2;
-
+extern volatile int Button_S3;
+extern float cutOffFreq1;
+extern float cutOffFreq2;
 extern float ScanResult_I[SCAN_SIZE];
 extern float ScanResult_Q[SCAN_SIZE];
 extern float ScanAmpResult[SCAN_SIZE];
@@ -44,7 +46,7 @@ extern float test;
 float getCorrectValue(float input)
 {
     float t;
-    t = (input - 2) / 3;
+    t = (input - 2)/3;
     return t;
     //return input;
 }
@@ -97,7 +99,7 @@ void PointFreq(void)
         {
             LCD_clearScreen();
             LCD_disString(1,2,"Out of range!");
-            DELAY_PROCESS_MS(300);
+            DELAY_PROCESS_MS(200);
             isOutOfRange = 1;
         }
         else
@@ -110,6 +112,34 @@ void PointFreq(void)
     PointResult_I = getCorrectValue(getADCValue());
     initADC(1);
     PointResult_Q = getCorrectValue(getADCValue());
+}
+
+void PointOutput(void)
+{
+    int inputFreqValue = 0;
+    int isOutOfRange = 1;
+    do{
+        inputFreqValue = inputNum();
+        if(inputFreqValue > 1000)
+        {
+            LCD_clearScreen();
+            LCD_disString(1,2,"Out of range!");
+            DELAY_PROCESS_MS(200);
+            isOutOfRange = 1;
+        }
+        else
+            isOutOfRange = 0;
+    }while(isOutOfRange);
+    unsigned long tempFreq = (unsigned long)inputFreqValue * 1000 ;
+    setSinOutput(tempFreq, 4090);
+    while(1)
+    {
+        LCD_disString(0,4,"Press S3 to Exit!");
+        if(Button_S3)
+        {
+            break;
+        }
+    }
 }
 
 void Calculate_Amp(void)
@@ -148,8 +178,8 @@ void Calculate_PointFreq(void)
 {
     float currI, currQ;
     float temp = 0;
-    unsigned char AmpValue[4];
-    unsigned char PhaseValue[4];
+    unsigned char AmpValue[8];
+    unsigned char PhaseValue[8];
     LCD_clearScreen();
     LCD_disString(1,2,"Calculating...");
     currI = PointResult_I;
@@ -159,13 +189,12 @@ void Calculate_PointFreq(void)
     temp = 0;
     temp = currQ / currI;
     PointPhaseResult = -1 * Arctan(temp);
-    convertFloattoCharArray(AmpValue,4,PointAmpResult,4);
-    convertFloattoCharArray(PhaseValue,4,PointPhaseResult,4);
+    convertFloattoCharArray(AmpValue,8,PointAmpResult,5);
+    convertFloattoCharArray(PhaseValue,8,PointPhaseResult,5);
     LCD_clearScreen();
     LCD_disString(1,2,AmpValue);
-    LCD_disString(3,2,"V");
     LCD_disString(1,3,PhaseValue);
-    LCD_disString(3,3,"°");
+    LCD_disString(5,3,"°");
 }
 
 int convertCord_Y(int inputY)
@@ -324,7 +353,6 @@ void drawAmpCurve_dB(void)
     float currMax = -100000;
     float currMin = 100000;
     float y_Scale_Single = 0;
-    float Farthest = 0;
     int x_GraphPos1 = 0;
     int y_GraphPos1 = 0;
     int x_GraphPos2;
@@ -348,7 +376,6 @@ void drawAmpCurve_dB(void)
     y_Scale_Single = (currMax - currMin) / 60 ;
     y_Scale = y_Scale_Single * 5;
     x_Scale = 50;
-    Farthest = currMax - currMin ;
     posOfAxis_X = (unsigned int)convertCord_Y((int)(( 0 - currMin) / y_Scale_Single));
     drawAmpCordinate_dB(posOfAxis_X);
     i = 0;
@@ -369,6 +396,7 @@ void drawPhaseCurve()
 {
     LCD_clearBuff();
     LCD_disString(1,2,"Drawing...");
+    drawPhaseCordinate();
     int i = 0;
     float y_Scale_Single = 0;
     x_Scale = 5;
@@ -387,7 +415,6 @@ void drawPhaseCurve()
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
     }
-    drawPhaseCordinate();
     LCD_clearScreen();
     LCD_disGraph();
 }
@@ -397,6 +424,8 @@ void showMoreInfo(int mode)
     LCD_BacktoStrMode();
     unsigned char x_Value[5];
     unsigned char y_Value[5];
+    unsigned char Fc_1[5];
+    unsigned char Fc_2[5];
     convertFloattoCharArray(x_Value,5,50.0,3);
     convertFloattoCharArray(y_Value,5,y_Scale,3);
     LCD_disString(0,1,"X:");
@@ -406,7 +435,12 @@ void showMoreInfo(int mode)
     if(mode == MODE_AMP_LN)
     {
         LCD_disString(4,1,"kHz/div");
-        LCD_disString(4,2,"V/div");
+        LCD_disString(4,2," /div");
+        CalculateCutOffFreq(ScanAmpResult);
+        convertFloattoCharArray(Fc_1,5,cutOffFreq1,3);
+        convertFloattoCharArray(Fc_2,5,cutOffFreq2,3);
+        LCD_disString(3,3,Fc_1);
+        LCD_disString(3,4,Fc_2);
     }
     else if(mode == MODE_AMP_DB)
     {
@@ -445,9 +479,9 @@ disCurve:   LCD_clearScreen();
                 }
             }
         }
-        if(Button_S1)
+        if(Button_S3)
         {
-            Button_S1 = 0;
+            Button_S3 = 0;
             break ;
         }
     }
@@ -457,12 +491,13 @@ void ScanOutput(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
-    unsigned char displayCurrFreq_char[7] = {'0','0','0','0','0','0','0'};
+    unsigned char displayCurrFreq_char[6] = {'0','0','0','0','0','0'};
     unsigned int displayCurrFreq = 0;
+    unsigned int isExit = 0;
     LCD_clearScreen();
-    LCD_disString(0,2,"Selcect Scan Step:");
-    LCD_disString(0,3,"1. 10Hz");
-    LCD_disString(0,4,"2. 1kHz");
+    LCD_disString(0,1,"Scan Step:");
+    LCD_disString(0,2,"1. 10Hz");
+    LCD_disString(0,3,"2. 1kHz");
     int isSelected = 0;
     do{
         if(Button_S1)
@@ -482,19 +517,67 @@ void ScanOutput(void)
     }while(!isSelected);
     isSelected = 0;
     LCD_clearScreen();
-    LCD_disString(1,2,"Scaning ...");
     while(currFreq < 1000000)
     {
+        LCD_disString(1,2,"Scaning ...");
         setSinOutput(currFreq,4090);
         DELAY_PROCESS_MS(1);
-        displayCurrFreq = (int)currFreq;
-        convertInttoCharArray(displayCurrFreq_char,displayCurrFreq,7);
-        LCD_disString(0,3,displayCurrFreq_char);
+        displayCurrFreq = (float)currFreq;
+        convertFloattoCharArray(displayCurrFreq_char,6,displayCurrFreq,5);
+        LCD_disString(1,3,displayCurrFreq_char);
         LCD_disString(7,3,"Hz");
         currFreq += stepFreq;
+        if(Button_S3)
+        {
+            //Button_S3         不需要,作为退出后直接返回程序起始点的判断标志
+            isExit = 1;
+            break;
+        }
+        if(Button_S2)
+        {
+            LCD_clearScreen();
+            LCD_disString(2,1,"Stop...");
+            LCD_disString(1,3,displayCurrFreq_char);
+            LCD_disString(7,3,"Hz");
+            Button_S2 = 0;
+            while(Button_S2 != 1);
+            LCD_clearScreen();
+            Button_S2 = 0;
+        }
     }
     LCD_clearScreen();
-    LCD_disString(1,2,"Scan Finish!");
-    DELAY_PROCESS_MS(10);
+    if(isExit)
+        LCD_disString(1,2,"Exit!");
+    else
+        LCD_disString(1,2,"Scan Finish!");
+    DELAY_PROCESS_MS(100);
 }
 
+void CalculateCutOffFreq(float inputArray[])
+{
+    int i;
+    int indexOfMax;
+    float cutOffValue = 0;
+    float tempArray[SCAN_SIZE];
+    float currMax = inputArray[0];
+    for(i = 0; i < SCAN_SIZE; i ++)
+    {
+        if(inputArray[i] > currMax)
+        {
+            currMax = inputArray[i];
+            indexOfMax = i;
+        }
+    }
+    cutOffValue = 0.707 * currMax;
+    for(i = 0; i <= indexOfMax; i ++)
+        tempArray[i] = inputArray[i];
+    for(i = indexOfMax + 1; i <= SCAN_SIZE; i++)
+        tempArray[i] = 10000;
+    cutOffFreq1 = 1000 + 50 * getNearIndex(cutOffValue,tempArray,SCAN_SIZE);
+    for(i = 0; i <= indexOfMax; i++)
+        tempArray[i] = 10000;
+    for(i = indexOfMax + 1; i <= SCAN_SIZE ; i++)
+        tempArray[i] = inputArray[i];
+    cutOffFreq2 = 1000 + 50 * getNearIndex(cutOffValue,tempArray,SCAN_SIZE);
+    
+}

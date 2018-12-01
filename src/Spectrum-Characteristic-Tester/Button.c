@@ -17,6 +17,7 @@ volatile int key_pre_cnt = 0;
 volatile int interrupt_key = 0;
 extern volatile int Button_S1; //should be defined in the "main.c" as a global varible
 extern volatile int Button_S2; //should be defined in the "main.c" as a global varible
+extern volatile int Button_S3; //should be defined in the "main.c" as a global varible
 
 extern int t ;
 
@@ -30,7 +31,6 @@ void initButtonsTimer(void)
 void initButtons(void)
 {
     _DINT();
-    P2REN |= BIT1; //防止P2.1IO口烧坏
     IO_BUTTON_S2_REN |= IO_BUTTON_BIT_S2;
     IO_BUTTON_S2_OUT |= IO_BUTTON_BIT_S2;
     IO_BUTTON_S2_DIR &= IO_BUTTON_BIT_S2;
@@ -44,9 +44,17 @@ void initButtons(void)
     IO_BUTTON_S1_IES |= IO_BUTTON_BIT_S1;
     IO_BUTTON_S1_IFG &= ~IO_BUTTON_BIT_S1;
     IO_BUTTON_S1_IE |=  IO_BUTTON_BIT_S1;
+
+    IO_BUTTON_S3_REN |= IO_BUTTON_BIT_S3;
+    IO_BUTTON_S3_OUT |= IO_BUTTON_BIT_S3;
+    IO_BUTTON_S3_DIR &= IO_BUTTON_BIT_S3;
+    IO_BUTTON_S3_IES |= IO_BUTTON_BIT_S3;
+    IO_BUTTON_S3_IFG &= ~IO_BUTTON_BIT_S3;
+    IO_BUTTON_S3_IE |=  IO_BUTTON_BIT_S3;
     
     Button_S1 = 0;
     Button_S2 = 0;
+    Button_S3 = 0;
 
     initButtonsTimer();
     _EINT();
@@ -85,6 +93,20 @@ __interrupt void Port_1(void)
         IO_BUTTON_S1_IFG = 0;
         IO_BUTTON_S1_IES |= IO_BUTTON_BIT_S1;
         IO_BUTTON_S1_IE |= IO_BUTTON_BIT_S1;    
+    }
+    else if(IO_BUTTON_S3_IFG&IO_BUTTON_BIT_S3)
+    {
+        if (key_pre_cnt < BUTTON_THRESHOLD) 
+            Button_S3=Button_S3;
+        else
+        {
+            Button_S3 = 1;
+            key_pre_cnt=0;
+        } 
+        IO_BUTTON_S3_IFG &=~ IO_BUTTON_BIT_S3;
+        IO_BUTTON_S3_IFG = 0;
+        IO_BUTTON_S3_IES |= IO_BUTTON_BIT_S3;
+        IO_BUTTON_S3_IE |= IO_BUTTON_BIT_S3;    
     }
 
 
