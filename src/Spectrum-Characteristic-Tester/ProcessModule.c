@@ -189,6 +189,9 @@ void Calculate_PointFreq(void)
     temp = 0;
     temp = currQ / currI;
     PointPhaseResult = -1 * Arctan(temp);
+
+    PointAmpResult = PointAmpResult * 2;
+
     convertFloattoCharArray(AmpValue,8,PointAmpResult,5);
     convertFloattoCharArray(PhaseValue,8,PointPhaseResult,5);
     LCD_clearScreen();
@@ -436,11 +439,11 @@ void showMoreInfo(int mode)
     {
         LCD_disString(4,1,"kHz/div");
         LCD_disString(4,2," /div");
-        CalculateCutOffFreq(ScanAmpResult);
-        convertFloattoCharArray(Fc_1,5,cutOffFreq1,3);
-        convertFloattoCharArray(Fc_2,5,cutOffFreq2,3);
-        LCD_disString(3,3,Fc_1);
-        LCD_disString(3,4,Fc_2);
+        //CalculateCutOffFreq();
+        //convertFloattoCharArray(Fc_1,5,cutOffFreq1,3);
+        //convertFloattoCharArray(Fc_2,5,cutOffFreq2,3);
+        //LCD_disString(3,3,Fc_1);
+        //LCD_disString(3,4,Fc_2);
     }
     else if(mode == MODE_AMP_DB)
     {
@@ -553,31 +556,41 @@ void ScanOutput(void)
     DELAY_PROCESS_MS(100);
 }
 
-void CalculateCutOffFreq(float inputArray[])
+void CalculateCutOffFreq(void)
 {
     int i;
     int indexOfMax;
     float cutOffValue = 0;
-    float tempArray[SCAN_SIZE];
-    float currMax = inputArray[0];
+    float currMax = ScanAmpResult[0];
+    double Abs = 0;
+    double MinAbs = 0;
     for(i = 0; i < SCAN_SIZE; i ++)
     {
-        if(inputArray[i] > currMax)
+        if(ScanAmpResult[i] > currMax)
         {
-            currMax = inputArray[i];
+            currMax = ScanAmpResult[i];
             indexOfMax = i;
         }
     }
     cutOffValue = 0.707 * currMax;
+    MinAbs = fabs((double)(ScanAmpResult[0] - cutOffValue));
     for(i = 0; i <= indexOfMax; i ++)
-        tempArray[i] = inputArray[i];
-    for(i = indexOfMax + 1; i <= SCAN_SIZE; i++)
-        tempArray[i] = 10000;
-    cutOffFreq1 = 1000 + 50 * getNearIndex(cutOffValue,tempArray,SCAN_SIZE);
-    for(i = 0; i <= indexOfMax; i++)
-        tempArray[i] = 10000;
-    for(i = indexOfMax + 1; i <= SCAN_SIZE ; i++)
-        tempArray[i] = inputArray[i];
-    cutOffFreq2 = 1000 + 50 * getNearIndex(cutOffValue,tempArray,SCAN_SIZE);
-    
+    {
+        Abs = fabs((double)(ScanAmpResult[i] - cutOffValue));
+        if(Abs < MinAbs)
+        {
+            MinAbs = Abs;
+            cutOffFreq1 = 1000 + i * 10000 ;
+        }
+    }  
+    MinAbs = fabs((double)(ScanAmpResult[indexOfMax + 1] - cutOffValue));
+    for(i = indexOfMax + 1 ; i < SCAN_SIZE; i ++)
+    {
+        Abs = fabs((double)(ScanAmpResult[i] - cutOffValue));
+        if(Abs < MinAbs)
+        {
+            MinAbs = Abs;
+            cutOffFreq2 = 1000 + ( i + indexOfMax) * 10000 ;
+        }
+    }   
 }

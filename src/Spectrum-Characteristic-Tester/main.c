@@ -292,13 +292,7 @@ void main(void)
 void main(void)
 {
  	WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-   test = 0;
-   initAD9854();
-   initLCD();
-   ScanFreq();
-   Calculate_Amp();
-   Calculate_Phase();
-   showCurve(MODE_AMP_DB);
+   testKeyboard();
 }
 */
 

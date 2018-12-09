@@ -50,14 +50,14 @@ Date		By			Version		Description
 
 
 
-#define AD9854_DataBus              IO_AD9854_DataBus_OUT             //P3BIT0 ~ IO_AD9854_BIT_RST 为数据总线, 对应 D0 ~ D7
-#define AD9854_AddrBus              IO_AD9854_AddrBus_OUT             //P2BIT0 ~ IO_AD9854_BIT_RST 为地址总线, 对应 A0 ~ A5
+#define AD9854_DataBus              IO_AD9854_DataBus_OUT             //P3BIT0 ~ BIT7 为数据总线, 对应 D0 ~ D7
+#define AD9854_AddrBus              IO_AD9854_AddrBus_OUT             //P4BIT0 ~ BIT5 为地址总线, 对应 A0 ~ A5
 #define DIROUT_AD9854_DataBus       IO_AD9854_DataBus_DIR = BIT0 + BIT1 + BIT2 + BIT3 + BIT4 + BIT5 + BIT6 + BIT7 ;      //数据线IO口设为输出
 #define DIROUT_AD9854_AddrBus       IO_AD9854_AddrBus_DIR = BIT0 + BIT1 + BIT2 + BIT3 + BIT4 + BIT5;     //地址线IO口设为输出
-#define DIROUT_RD                   IO_AD9854_CtlBus1_DIR |= IO_AD9854_BIT_RD;    //P4.4 -> RD
-#define DIROUT_WR                   IO_AD9854_CtlBus1_DIR |= IO_AD9854_BIT_WR;    //P4.5 -> WR
-#define DIROUT_UDCLK                IO_AD9854_CtlBus2_DIR |= IO_AD9854_BIT_UCLK;    //P4.6 -> UCLK
-#define DIROUT_RST                  IO_AD9854_CtlBus2_DIR |= IO_AD9854_BIT_RST;    //P4.7 -> RST
+#define DIROUT_RD                   IO_AD9854_CtlBus1_DIR |= IO_AD9854_BIT_RD;    //P8.1 -> RD
+#define DIROUT_WR                   IO_AD9854_CtlBus1_DIR |= IO_AD9854_BIT_WR;    //P8.2 -> WR
+#define DIROUT_UDCLK                IO_AD9854_CtlBus2_DIR |= IO_AD9854_BIT_UCLK;    //P7.0 -> UCLK
+#define DIROUT_RST                  IO_AD9854_CtlBus2_DIR |= IO_AD9854_BIT_RST;    //P7.4 -> RST
 #define RD0_AD9854                  IO_AD9854_CtlBus1_OUT &= ~IO_AD9854_BIT_RD;   //RD使能(低有效)
 #define RD1_AD9854                  IO_AD9854_CtlBus1_OUT |= IO_AD9854_BIT_RD;
 #define WR0_AD9854                  IO_AD9854_CtlBus1_OUT &= ~IO_AD9854_BIT_WR;   //WR使能(低有效)
