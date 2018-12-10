@@ -274,6 +274,27 @@ void testPointFreq(void)
   Calculate_PointFreq();
 }
 
+void testSpecificFreq(unsigned long specificFreq)
+{
+  initAD9854();
+  initADC(0);
+  initLCD();
+  unsigned char TEST_ADCValue0[8];
+  unsigned char TEST_ADCValue1[8];
+  while(1)
+  {
+      setSinOutput(specificFreq,4090);
+      initADC(0);
+      ADCResult0 = getADCValue();
+      convertFloattoCharArray(TEST_ADCValue0,8,ADCResult0,5);
+      LCD_disString(1,1,TEST_ADCValue0);
+      initADC(1);
+      ADCResult1 = getADCValue();
+      convertFloattoCharArray(TEST_ADCValue1,8,ADCResult1,5);
+      LCD_disString(1,2,TEST_ADCValue1);
+  }
+
+}
 int test = 0;
 unsigned long test1 = 0;
 float testMax = 0;
@@ -285,7 +306,8 @@ float cutOffFreq2;
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     testButton();
+     //testSpecificFreq(50000);
+     testKeyboard();
 }
 */
 /*
@@ -423,5 +445,3 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
-
-
