@@ -46,7 +46,7 @@ extern float test;
 float getCorrectValue(float input)
 {
     float t;
-    t = (input - 2)/3;
+    t = (input - 1.48)/2;
     return t;
     //return input;
 }
@@ -63,7 +63,7 @@ void ScanFreq(void)
     while(currFreq < 1000000)
     {
         setSinOutput(currFreq,4090);
-        DELAY_PROCESS_MS(1);
+        DELAY_PROCESS_MS(5);
         testCurrFreq = currFreq;
         initADC(0);
         ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
