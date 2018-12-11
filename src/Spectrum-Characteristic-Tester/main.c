@@ -43,6 +43,7 @@ int t = 0;
 volatile int Button_S1;
 volatile int Button_S2;
 volatile int Button_S3;
+volatile int Button_S4;
 
 void testADC(void)
 {
@@ -210,7 +211,7 @@ void testScanFreq(void)
   ScanFreq();
   Calculate_Amp();
   Calculate_Phase();
-  showCurve(MODE_AMP_LN);
+  showPhaseCurve();
 }
 
 void testScanForever(void)
@@ -302,14 +303,14 @@ float testMin = 0;
 int indexOfNearest = 0;
 float cutOffFreq1;
 float cutOffFreq2;
-/*
+
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
      //testSpecificFreq(50000);
-     testKeyboard();
+     testScanFreq();
 }
-*/
+
 /*
 void main(void)
 {
@@ -317,7 +318,7 @@ void main(void)
    testKeyboard();
 }
 */
-
+/*
 unsigned int isExittoMenu = 0;
 void main(void)
 {
@@ -445,3 +446,4 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
+*/

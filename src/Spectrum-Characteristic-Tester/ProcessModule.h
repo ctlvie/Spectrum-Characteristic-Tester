@@ -49,4 +49,8 @@ void showCurve(int mode);
 float getCorrectValue(float input);
 void ScanOutput(void);
 void PointOutput(void);
+void showMoreInfo(int mode, int isZoom);
+void showAmpCurve_Linear(void);
+void showAmpCurve_dB(void);
+void showPhaseCurve(void);
 #endif /* PROCESSMODULE_H_ */
