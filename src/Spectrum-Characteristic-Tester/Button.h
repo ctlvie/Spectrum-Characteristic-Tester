@@ -47,9 +47,18 @@ Date		By			Version		Description
 #define IO_BUTTON_S3_IE  P1IE
 #define IO_BUTTON_S3_REN P1REN
 
+#define IO_BUTTON_S4_IFG P1IFG
+#define IO_BUTTON_S4_IN  P1IN
+#define IO_BUTTON_S4_DIR P1DIR
+#define IO_BUTTON_S4_IES P1IES
+#define IO_BUTTON_S4_OUT P1OUT
+#define IO_BUTTON_S4_IE  P1IE
+#define IO_BUTTON_S4_REN P1REN
+
 #define IO_BUTTON_BIT_S1 BIT2
 #define IO_BUTTON_BIT_S2 BIT3
 #define IO_BUTTON_BIT_S3 BIT4
+#define IO_BUTTON_BIT_S4 BIT5
 
 void initButtons(void);
 void initButtonsTimer(void);
