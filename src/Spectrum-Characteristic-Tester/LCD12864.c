@@ -391,7 +391,8 @@ void LCD_drawPoints(int x_pos, int y_pos,uint color)
 			case 6:  currBuff = currBuff | 0b00000010; break;
 			case 7:  currBuff = currBuff | 0b00000001; break;
 		 }
-		 LCD_GraphBuff[buff_number] = currBuff;
+		 if(buff_number >= 0 && buff_number < 1024)
+		 	LCD_GraphBuff[buff_number] = currBuff;
 	 }
 	 else
 	 {
@@ -407,7 +408,8 @@ void LCD_drawPoints(int x_pos, int y_pos,uint color)
 			case 6:  currBuff = currBuff & 0b11111101; break;
 			case 7:  currBuff = currBuff & 0b11111110; break;
 		 }
-		 LCD_GraphBuff[buff_number] = currBuff;
+		 if(buff_number >= 0 && buff_number < 1024)
+		 	LCD_GraphBuff[buff_number] = currBuff;
 	 }
 }
 
