@@ -29,8 +29,8 @@ extern volatile int Button_S1;
 extern volatile int Button_S2;
 extern volatile int Button_S3;
 extern volatile int Button_S4;
-extern float cutOffFreq1;
-extern float cutOffFreq2;
+extern volatile float cutOffFreq1;
+extern volatile float cutOffFreq2;
 extern float ScanResult_I[SCAN_SIZE];
 extern float ScanResult_Q[SCAN_SIZE];
 extern float ScanAmpResult[SCAN_SIZE];
@@ -42,7 +42,7 @@ extern float PointAmpResult;
 extern float PointPhaseResult;
 extern float x_Scale;
 extern float y_Scale;
-extern float test;
+extern volatile float test;
 
 float getCorrectValue(float input)
 {
@@ -64,7 +64,7 @@ void ScanFreq(void)
     while(currFreq < 1000000)
     {
         setSinOutput(currFreq,4090);
-        DELAY_PROCESS_MS(3);
+        DELAY_PROCESS_MS(10);
         testCurrFreq = currFreq;
         initADC(0);
         ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
@@ -703,7 +703,7 @@ void showMoreInfo(int mode, int isZoom)
     {
         LCD_disString(4,1,"kHz/div");
         LCD_disString(4,2," /div");
-        //CalculateCutOffFreq();
+        //Calculate_CutOffFreq();
         //convertFloattoCharArray(Fc_1,5,cutOffFreq1,3);
         //convertFloattoCharArray(Fc_2,5,cutOffFreq2,3);
         //LCD_disString(3,3,Fc_1);
@@ -800,14 +800,14 @@ void ScanOutput(void)
     DELAY_PROCESS_MS(100);
 }
 
-void CalculateCutOffFreq(void)
+void Calculate_CutOffFreq(void)
 {
-    int i;
-    int indexOfMax;
-    float cutOffValue = 0;
-    float currMax = ScanAmpResult[0];
-    double Abs = 0;
-    double MinAbs = 0;
+    volatile int i;
+    volatile int indexOfMax;
+    volatile float cutOffValue = 0;
+    volatile float currMax = ScanAmpResult[0];
+    volatile float num1 = 0;
+    volatile float num2 = 0;
     for(i = 0; i < SCAN_SIZE; i ++)
     {
         if(ScanAmpResult[i] > currMax)
@@ -817,24 +817,28 @@ void CalculateCutOffFreq(void)
         }
     }
     cutOffValue = 0.707 * currMax;
-    MinAbs = fabs((double)(ScanAmpResult[0] - cutOffValue));
-    for(i = 0; i <= indexOfMax; i ++)
-    {
-        Abs = fabs((double)(ScanAmpResult[i] - cutOffValue));
-        if(Abs < MinAbs)
-        {
-            MinAbs = Abs;
-            cutOffFreq1 = 1000 + i * 10000 ;
-        }
-    }  
-    MinAbs = fabs((double)(ScanAmpResult[indexOfMax + 1] - cutOffValue));
-    for(i = indexOfMax + 1 ; i < SCAN_SIZE; i ++)
-    {
-        Abs = fabs((double)(ScanAmpResult[i] - cutOffValue));
-        if(Abs < MinAbs)
-        {
-            MinAbs = Abs;
-            cutOffFreq2 = 1000 + ( i + indexOfMax) * 10000 ;
-        }
-    }   
+   for(i = 0; i <= indexOfMax; i++)
+   {
+       num1 = ScanAmpResult[i];
+       num2 = ScanAmpResult[i+1];
+       if((num1 <= cutOffValue) && (num2 >= cutOffValue))
+       {
+           cutOffFreq1 = i * 10000 + ((cutOffValue - num1) * 10000 / (num2 - num1));
+           break;
+       }
+       cutOffFreq1 = 0.0;
+   }
+   num1 = 0;
+   num2 = 0;
+   for(i = indexOfMax; i < SCAN_SIZE - 1; i++)
+   {
+       num1 = ScanAmpResult[i];
+       num2 = ScanAmpResult[i+1];
+       if((num1 >= cutOffValue) && (num2 <= cutOffValue))
+       {
+           cutOffFreq2 = i * 10000 + ((num1 - cutOffValue) * 10000 / (num1 - num2));
+           break;
+       }
+       cutOffFreq2 = 0.0;
+   }
 }
