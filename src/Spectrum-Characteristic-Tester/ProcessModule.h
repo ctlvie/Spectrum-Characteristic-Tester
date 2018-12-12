@@ -42,15 +42,13 @@ void CalculateCutOffFreq(void);
 int convertCord_Y(int inputY);
 void drawAmpCordinate_Linear(void);
 void drawPhaseCordinate(void);
-void drawAmpCurve_Linear(void);
-void drawAmpCurve_dB(void);
-void drawPhaseCurve();
+void showAmpCurve_Linear(void);
+void showAmpCurve_dB(void);
+void showPhaseCurve(void);
+void showMoreInfo(int mode, int isZoom);
 void showCurve(int mode);
 float getCorrectValue(float input);
 void ScanOutput(void);
 void PointOutput(void);
-void showMoreInfo(int mode, int isZoom);
-void showAmpCurve_Linear(void);
-void showAmpCurve_dB(void);
-void showPhaseCurve(void);
+
 #endif /* PROCESSMODULE_H_ */

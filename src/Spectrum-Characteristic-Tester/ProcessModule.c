@@ -304,48 +304,6 @@ void drawPhaseCordinate(void)
     }
 }
 
-void drawAmpCurve_Linear(void)
-{
-    LCD_clearBuff();
-    LCD_clearScreen();
-    LCD_disString(1,2,"Drawing...");
-    drawAmpCordinate_Linear();
-    //find the maximum number of the results
-    int i = 0;
-    float currMax = ScanAmpResult[0];
-    //int intTempResult = 0;
-    float y_Scale_Single = 0;
-    int x_GraphPos1 = 0;
-    int y_GraphPos1 = 0;
-    int x_GraphPos2;
-    int y_GraphPos2;
-
-    for(i = 0; i < SCAN_SIZE ; i++)
-    {
-        if(ScanAmpResult[i] > currMax)
-            currMax = ScanAmpResult[i];
-    }
-    //intTempResult = (int)currMax;
-    //currMax = (float)intTempResult + 1;
-    y_Scale_Single = currMax / 50 ;
-    y_Scale = y_Scale_Single * 5;
-    x_Scale = 5;
-
-    i = 0;
-
-    for(i = 0 ; i < SCAN_SIZE ; i++)
-    {
-        x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)(ScanAmpResult[i] / y_Scale_Single));
-        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
-        x_GraphPos1 = x_GraphPos2;
-        y_GraphPos1 = y_GraphPos2;
-    }
-    LCD_clearScreen();
-    LCD_disGraph();
-
-}
-
 void showAmpCurve_Linear(void)
 {
     AMPLN_reCalculateTotal:    LCD_clearBuff();
@@ -444,7 +402,7 @@ void showAmpCurve_Linear(void)
                                 goto displayZoom;
                             }
                         }
-                        break;
+                      //  break;
                     }
                     if(Button_S2)
                     {
@@ -471,56 +429,6 @@ void showAmpCurve_Linear(void)
             }
         }
     }   
-    
-}
-
-void drawAmpCurve_dB(void)
-{
-    LCD_clearBuff();
-    LCD_clearScreen();
-    LCD_disString(1,2,"Drawing...");
-    int i;
-    for(i = 0; i < SCAN_SIZE ; i++)
-        ScanAmpResult_dB[i] = 20 * (float)log10((double)ScanAmpResult[i]);
-    float currMax = -100000;
-    float currMin = 100000;
-    float y_Scale_Single = 0;
-    int x_GraphPos1 = 0;
-    int y_GraphPos1 = 0;
-    int x_GraphPos2;
-    int y_GraphPos2;
-    unsigned int posOfAxis_X;
-    for(i = 0; i < SCAN_SIZE ; i++)
-    {
-        if(ScanAmpResult_dB[i] > currMax)
-        {
-            currMax = ScanAmpResult_dB[i];
-        }
-        if(ScanAmpResult_dB[i] < currMin)
-        {
-            currMin = ScanAmpResult_dB[i];
-        }
-    }
-    if(currMax < 0 )
-    {
-        currMax = 5;
-    }
-    y_Scale_Single = (currMax - currMin) / 60 ;
-    y_Scale = y_Scale_Single * 5;
-    x_Scale = 50;
-    posOfAxis_X = (unsigned int)convertCord_Y((int)(( 0 - currMin) / y_Scale_Single));
-    drawAmpCordinate_dB(posOfAxis_X);
-    i = 0;
-    for(i = 0 ; i < SCAN_SIZE ; i++)
-    {
-        x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)((ScanAmpResult_dB[i] - currMin) / y_Scale_Single));
-        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
-        x_GraphPos1 = x_GraphPos2;
-        y_GraphPos1 = y_GraphPos2;
-    }
-    LCD_clearScreen();
-    LCD_disGraph();
     
 }
 
@@ -632,7 +540,7 @@ void showAmpCurve_dB(void)
                                 goto AMPDB_displayZoom;
                             }
                         }
-                        break;
+                    //    break;
                     }
                     if(Button_S2)
                     {
@@ -661,32 +569,6 @@ void showAmpCurve_dB(void)
     }
 }
 
-void drawPhaseCurve()
-{
-    LCD_clearBuff();
-    LCD_disString(1,2,"Drawing...");
-    drawPhaseCordinate();
-    int i = 0;
-    float y_Scale_Single = 0;
-    x_Scale = 5;
-    y_Scale_Single = 360 / Y_LENGTH;
-    y_Scale = 5 * y_Scale_Single;
-    int x_GraphPos1 = 0;
-    int y_GraphPos1 = Y_MIDDLE;
-    int x_GraphPos2;
-    int y_GraphPos2;
-
-    for(i = 0; i < SCAN_SIZE; i++)
-    {
-        x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)((ScanPhaseResult[i] + 180) / y_Scale_Single));
-        LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
-        x_GraphPos1 = x_GraphPos2;
-        y_GraphPos1 = y_GraphPos2;
-    }
-    LCD_clearScreen();
-    LCD_disGraph();
-}
 
 void showPhaseCurve(void)
 {
@@ -772,7 +654,7 @@ void showPhaseCurve(void)
                                 goto PHASE_displayZoom;
                             }
                         }
-                        break;
+                     //   break;
                     }
                     if(Button_S2)
                     {
@@ -841,36 +723,16 @@ void showMoreInfo(int mode, int isZoom)
 
 void showCurve(int mode)
 {
-    if(mode == MODE_AMP_LN)
-        drawAmpCurve_Linear();
-    else if(mode == MODE_AMP_DB)
-        drawAmpCurve_dB();
-    else 
-        drawPhaseCurve();
-disCurve:   LCD_clearScreen();
-    LCD_disGraph();
-    while(1)
+    switch(mode)
     {
-        if(Button_S2)
-        {
-            Button_S2 = 0;
-            showMoreInfo(mode,0);
-            while(1)
-            {
-                if(Button_S2)
-                {
-                    Button_S2 = 0;
-                    goto disCurve;
-                }
-            }
-        }
-        if(Button_S3)
-        {
-            Button_S3 = 0;
-            break ;
-        }
+        case MODE_AMP_LN: showAmpCurve_Linear(); break;
+        case MODE_AMP_DB: showAmpCurve_dB(); break;
+        case MODE_PHASE: showPhaseCurve(); break;
+        default: break;
     }
 }
+
+
 
 void ScanOutput(void)
 {
