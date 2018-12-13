@@ -16,7 +16,7 @@ Date		By			Version		Description
 #include<math.h>
 #include <stdio.h>
 
-void recurParse(int n, unsigned char** str, unsigned int* restSize) {
+void recurParse(long n, unsigned char** str, unsigned long* restSize) {
         if (n < 10) {
                 if (*restSize > 1) {
                         **str = n + '0';
@@ -46,13 +46,13 @@ void recurParse(int n, unsigned char** str, unsigned int* restSize) {
 //Output:       ?
 //------------------------------------------------- 
 
-void convertFloattoCharArray(unsigned char* outputChar, unsigned int bufferSize, float inputFloart, unsigned int decCount) {
-        int n;
+void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloart, unsigned long decCount) {
+        long n;
         float dec;
-        unsigned int restSize = bufferSize;
+        unsigned long restSize = bufferSize;
         //if (restSize == 0) return 0;
-        n = (int)inputFloart;
-        dec = inputFloart - n;
+        n = (long)inputFloart;
+        dec = inputFloart - (float)n;
         if (inputFloart < 0) {
                 if (restSize > 1 && !(n == 0 && decCount == 0)) {
                         *outputChar++ = '-';
@@ -72,7 +72,7 @@ void convertFloattoCharArray(unsigned char* outputChar, unsigned int bufferSize,
         }
         while (decCount) {
                 dec *= 10;
-                n = (int)dec;
+                n = (long)dec;
                 dec -= n;
                 if (restSize > 1) {
                         *outputChar++ = n + '0';

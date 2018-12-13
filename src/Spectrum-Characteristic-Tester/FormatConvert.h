@@ -15,8 +15,8 @@ Date		By			Version		Description
 #define FORMATCONVERT_H_
 
 
-void recurParse(int n, unsigned char** str, unsigned int* restSize);
-void convertFloattoCharArray(unsigned char* outputChar, unsigned int bufferSize, float inputFloart, unsigned int decCount);
+void recurParse(long n, unsigned char** str, unsigned long* restSize);
+void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloart, unsigned long decCount);
 int convertCharArraytoInt(unsigned char Array[], int Bits);
 void convertInttoCharArray(unsigned char* outputChar, unsigned int InputInt, unsigned int size);
 float abs_f(float x);
