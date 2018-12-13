@@ -16,7 +16,7 @@ Date		By			Version		Description
 
 
 void recurParse(long n, unsigned char** str, unsigned long* restSize);
-void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloart, unsigned long decCount);
+void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloat, unsigned long decCount);
 int convertCharArraytoInt(unsigned char Array[], int Bits);
 void convertInttoCharArray(unsigned char* outputChar, unsigned int InputInt, unsigned int size);
 float abs_f(float x);

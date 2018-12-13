@@ -37,23 +37,23 @@ void recurParse(long n, unsigned char** str, unsigned long* restSize) {
 
 
 //-------------------------------------------------
-//Name:         void convertFloattoCharArray(char* outputChar, unsigned int bufferSize, float inputFloart, unsigned int decCount)
+//Name:         void convertFloattoCharArray(char* outputChar, unsigned int bufferSize, float inputFloat, unsigned int decCount)
 //Description:  float??????
 //Input:        outputChar: ?????????
 //              bufferSize: ???????????
-//              inputFloart: ???????
+//              inputFloat: ???????
 //              decCount: ????????????
 //Output:       ?
 //------------------------------------------------- 
 
-void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloart, unsigned long decCount) {
+void convertFloattoCharArray(unsigned char* outputChar, unsigned long bufferSize, float inputFloat, unsigned long decCount) {
         long n;
         float dec;
         unsigned long restSize = bufferSize;
         //if (restSize == 0) return 0;
-        n = (long)inputFloart;
-        dec = inputFloart - (float)n;
-        if (inputFloart < 0) {
+        n = (long)inputFloat;
+        dec = inputFloat - (float)n;
+        if (inputFloat < 0) {
                 if (restSize > 1 && !(n == 0 && decCount == 0)) {
                         *outputChar++ = '-';
                         --restSize;
