@@ -45,6 +45,10 @@ volatile int Button_S2;
 volatile int Button_S3;
 volatile int Button_S4;
 
+volatile float cutOffFreq1;
+volatile float cutOffFreq2;
+
+
 void testADC(void)
 {
   unsigned char TEST_ADCValue0[8];
@@ -296,21 +300,35 @@ void testSpecificFreq(unsigned long specificFreq)
   }
 
 }
-int test = 0;
+
+void testCutOffFreq(void)
+{
+  initAD9854();
+  initADC(0);
+  initLCD();
+  initButtons();
+  ScanFreq();
+  Calculate_Amp();
+  Calculate_Phase();
+  Calculate_CutOffFreq();
+  unsigned char Fc_1[10], Fc_2[10];
+  convertFloattoCharArray(Fc_1,(long)10,cutOffFreq1,(long)7);
+  convertFloattoCharArray(Fc_2,(long)10,cutOffFreq2,(long)3);
+  LCD_clearScreen();
+  LCD_disString(1,2,Fc_1);
+  LCD_disString(1,3,Fc_2);
+}
+
+
+volatile int test = 0;
 unsigned long test1 = 0;
-float testMax = 0;
-float testMin = 0;
-int indexOfNearest = 0;
-float cutOffFreq1;
-float cutOffFreq2;
-/*
+
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     //testSpecificFreq(50000);
-     testScanFreq();
+     testCutOffFreq();
 }
-*/
+
 /*
 void main(void)
 {
@@ -318,7 +336,7 @@ void main(void)
    testKeyboard();
 }
 */
-
+/*
 unsigned int isExittoMenu = 0;
 void main(void)
 {
@@ -446,3 +464,5 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
+*/
+

@@ -823,7 +823,7 @@ void Calculate_CutOffFreq(void)
        num2 = ScanAmpResult[i+1];
        if((num1 <= cutOffValue) && (num2 >= cutOffValue))
        {
-           cutOffFreq1 = i * 10000 + ((cutOffValue - num1) * 10000 / (num2 - num1));
+           cutOffFreq1 = (float)i * 10000 + ((cutOffValue - num1) * 10000 / (num2 - num1));
            break;
        }
        cutOffFreq1 = 0.0;
@@ -836,7 +836,7 @@ void Calculate_CutOffFreq(void)
        num2 = ScanAmpResult[i+1];
        if((num1 >= cutOffValue) && (num2 <= cutOffValue))
        {
-           cutOffFreq2 = i * 10000 + ((num1 - cutOffValue) * 10000 / (num1 - num2));
+           cutOffFreq2 = (float)i * 10000 + ((num1 - cutOffValue) * 10000 / (num1 - num2));
            break;
        }
        cutOffFreq2 = 0.0;
