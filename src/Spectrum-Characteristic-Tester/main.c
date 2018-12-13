@@ -21,6 +21,7 @@ Date        By          Version     Description
 #include "Button.h"
 #include "Board.h"
 #include"ProcessModule.h"
+#include"GlobalTimer.h"
 #include<math.h>
 
 #define uint  unsigned int
@@ -322,13 +323,28 @@ void testCutOffFreq(void)
 
 volatile int test = 0;
 unsigned long test1 = 0;
+unsigned int globalTime_min = 0;
+unsigned int globalTime_sec = 0;
+unsigned int globalTime_ms = 0;
+unsigned char TimerBuff[9] = {'0','0',':','0','0','.','0','0','\0'};
 
+void testTimer(void)
+{
+    initLCD();
+    initGlobalTimer();
+    startTimer();
+    while(1)
+    {
+      LCD_disString(0,3,TimerBuff);
+    }
+}
+/*
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     testCutOffFreq();
+     testTimer();
 }
-
+*/
 /*
 void main(void)
 {
@@ -336,7 +352,7 @@ void main(void)
    testKeyboard();
 }
 */
-/*
+
 unsigned int isExittoMenu = 0;
 void main(void)
 {
@@ -346,6 +362,7 @@ void main(void)
   initButtons();
   initBoard();
   initAD9854();
+  initGlobalTimer();
 
 start: LCD_BacktoStrMode();
   LCD_clearScreen();
@@ -464,5 +481,5 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
-*/
+
 

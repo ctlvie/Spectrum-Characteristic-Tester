@@ -19,6 +19,7 @@ Date		By			Version		Description
 #include"ADS1115.h"
 #include "Button.h"
 #include "Board.h"
+#include "GlobalTimer.h"
 #include <stdlib.h>
 #include <math.h>
 
@@ -43,6 +44,7 @@ extern float PointPhaseResult;
 extern float x_Scale;
 extern float y_Scale;
 extern volatile float test;
+extern unsigned char TimerBuff[8];
 
 float getCorrectValue(float input)
 {
@@ -61,6 +63,7 @@ void ScanFreq(void)
     LCD_clearScreen();
     LCD_disString(1,1,"Scaning...");
     stepFreq = STEP_FREQ;
+    startTimer();
     while(currFreq < 1000000)
     {
         setSinOutput(currFreq,4090);
@@ -74,6 +77,7 @@ void ScanFreq(void)
         convertInttoCharArray(currPercent_char,currSchedule,2);
         LCD_disString(3,3,currPercent_char);
         LCD_disString(4,3," %");
+        LCD_disString(2,4,TimerBuff);
         /*
         if((currFreq % 10000) == 0)
         {
@@ -87,6 +91,7 @@ void ScanFreq(void)
     }
     LCD_clearScreen();
     LCD_disString(1,2,"Scan Finish!");
+    stopTimer();
 }
 
 extern unsigned long test1;
