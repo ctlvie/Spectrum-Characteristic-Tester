@@ -255,6 +255,26 @@ void LCD_disString(unsigned int x,unsigned int y,uchar* s)
    }
 }
 
+//-------------------------------------------------
+//Name:         LCD_disChar(unsigned int x,unsigned int y,uchar* s)
+//Description:  显示Char
+//Input:        unsigned int x :	位置的x坐标
+//				unsigned int y:		位置的y坐标
+//				uchar* s:	需要显示的字符
+//Output:       无
+//------------------------------------------------- 
+void LCD_disChar(unsigned int x,unsigned int y,uchar s)
+{
+	 switch(y)
+     {
+	  case 1: WriteCommand(0x80+x);break;
+	  case 2: WriteCommand(0x90+x);break;
+	  case 3: WriteCommand(0x88+x);break;
+	  case 4: WriteCommand(0x98+x);break;
+      default:break;
+	 }
+    WriteData(s);
+}
 
 //-------------------------------------------------
 //Name:         LCD_disGBStr(uchar *LCD_ChineseBuff)
@@ -349,6 +369,36 @@ void LCD_disGraph(void)
 			WriteData(LCD_GraphBuff[16*32 +uc_VerCnt*16 + uc_HorCnt ]);
 	};
 	DELAY_LCD_MS(20);
+}
+
+//-------------------------------------------------
+//Name:         LCD_CursorON(unsigned int x,unsigned int y)
+//Description:  显示光标
+//Input:        unsigned int x,unsigned int y
+//Output:       无
+//------------------------------------------------- 
+void LCD_CursorON(unsigned int x,unsigned int y)
+{
+	switch(y)
+     {
+	  case 1: WriteCommand(0x80+x);break;
+	  case 2: WriteCommand(0x90+x);break;
+	  case 3: WriteCommand(0x88+x);break;
+	  case 4: WriteCommand(0x98+x);break;
+      default:break;
+	 }
+	 WriteCommand(0x0f);
+}
+
+//-------------------------------------------------
+//Name:         LCD_CursorOFF(void)
+//Description:  关闭光标
+//Input:        无
+//Output:       无
+//------------------------------------------------- 
+void LCD_CursorOFF(void)
+{
+	WriteCommand(0x0c);
 }
 
 void LCD_clearBuff(void)
@@ -521,3 +571,4 @@ void LCD_drawLine(uchar X0,uchar Y0,uchar X1,uchar Y1,uchar Color)
 		}
 	}
 }
+
