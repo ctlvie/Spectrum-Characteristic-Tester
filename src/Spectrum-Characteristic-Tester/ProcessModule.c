@@ -195,9 +195,6 @@ void Calculate_PointFreq(void)
     temp = 0;
     temp = currQ / currI;
     PointPhaseResult = -1 * Arctan(temp);
-
-    PointAmpResult = PointAmpResult * 2;
-
     convertFloattoCharArray(AmpValue,8,PointAmpResult,5);
     convertFloattoCharArray(PhaseValue,8,PointPhaseResult,5);
     LCD_clearScreen();
@@ -354,7 +351,7 @@ void showAmpCurve_Linear(void)
         if(Button_S1)       //S1: 显示坐标单位等信息
         {
             Button_S1 = 0;
-            showMoreInfo(MODE_AMP_LN,0);
+            showInfo_Unit(MODE_AMP_LN,0);
             while(1)
             {
                 if(Button_S1)
@@ -364,14 +361,27 @@ void showAmpCurve_Linear(void)
                 }
             }
         }
+        if(Button_S2)       //S2: 显示截止频率
+        {
+            Button_S2 = 0;
+            showInfo_CutOffFreq();
+            while(1)
+            {
+                if(Button_S2)
+                {
+                    Button_S2 = 0;
+                    goto AMPLN_displayTotal;
+                }
+            }
+        }
         if(Button_S4)       //S4:结束曲线查看模式
         {
             Button_S4 = 0;
             break;
         }
-        if(Button_S2)       //S2:进入放大模式
+        if(Button_S3)       //S3:进入放大模式
         {
-            Button_S2 = 0;
+            Button_S3 = 0;
             while(1)
             {
                 LCD_clearBuff();
@@ -398,7 +408,7 @@ void showAmpCurve_Linear(void)
                     if(Button_S1)
                     {
                         Button_S1 = 0;
-                        showMoreInfo(MODE_AMP_LN,1);
+                        showInfo_Unit(MODE_AMP_LN,1);
                         while(1)
                         {
                             if(Button_S1)
@@ -492,7 +502,7 @@ void showAmpCurve_dB(void)
         if(Button_S1)       //S1: 显示坐标单位等信息
         {
             Button_S1 = 0;
-            showMoreInfo(MODE_AMP_DB,0);
+            showInfo_Unit(MODE_AMP_DB,0);
             while(1)
             {
                 if(Button_S1)
@@ -502,14 +512,27 @@ void showAmpCurve_dB(void)
                 }
             }
         }
+        if(Button_S2)       //S2: 显示截止频率
+        {
+            Button_S2 = 0;
+            showInfo_CutOffFreq();
+            while(1)
+            {
+                if(Button_S2)
+                {
+                    Button_S2 = 0;
+                    goto AMPDB_displayTotal;
+                }
+            }
+        }
         if(Button_S4)       //S4:结束曲线查看模式
         {
             Button_S4 = 0;
             break;
         }
-        if(Button_S2)       //S2:进入放大模式
+        if(Button_S3)       //S3:进入放大模式
         {
-            Button_S2 = 0;
+            Button_S3 = 0;
             while(1)
             {
                 LCD_clearBuff();
@@ -536,7 +559,7 @@ void showAmpCurve_dB(void)
                     if(Button_S1)
                     {
                         Button_S1 = 0;
-                        showMoreInfo(MODE_AMP_DB,1);
+                        showInfo_Unit(MODE_AMP_DB,1);
                         while(1)
                         {
                             if(Button_S1)
@@ -606,7 +629,7 @@ void showPhaseCurve(void)
         if(Button_S1)       //S1: 显示坐标单位等信息
         {
             Button_S1 = 0;
-            showMoreInfo(MODE_PHASE,0);
+            showInfo_Unit(MODE_PHASE,0);
             while(1)
             {
                 if(Button_S1)
@@ -621,9 +644,9 @@ void showPhaseCurve(void)
             Button_S4 = 0;
             break;
         }
-        if(Button_S2)       //S2:进入放大模式
+        if(Button_S3)       //S3:进入放大模式
         {
-            Button_S2 = 0;
+            Button_S3 = 0;
             while(1)
             {
                 LCD_clearBuff();
@@ -650,7 +673,7 @@ void showPhaseCurve(void)
                     if(Button_S1)
                     {
                         Button_S1 = 0;
-                        showMoreInfo(MODE_PHASE,1);
+                        showInfo_Unit(MODE_PHASE,1);
                         while(1)
                         {
                             if(Button_S1)
@@ -688,13 +711,13 @@ void showPhaseCurve(void)
     }
 }
 
-void showMoreInfo(int mode, int isZoom)
+void showInfo_Unit(int mode, int isZoom)
 {
     LCD_BacktoStrMode();
     unsigned char x_Value[5];
     unsigned char y_Value[5];
-    unsigned char Fc_1[5];
-    unsigned char Fc_2[5];
+    unsigned char Fc_1[8];
+    unsigned char Fc_2[8];
     if(isZoom)
         convertFloattoCharArray(x_Value,5,5.0,3);
     else
@@ -726,6 +749,21 @@ void showMoreInfo(int mode, int isZoom)
     }
 }
 
+void showInfo_CutOffFreq(void)
+{
+    unsigned char Fc_1[8], Fc_2[8];
+    Calculate_CutOffFreq();
+    convertFloattoCharArray(Fc_1,(long)8,cutOffFreq1,(long)3);
+    convertFloattoCharArray(Fc_2,(long)8,cutOffFreq2,(long)3);
+    LCD_BacktoStrMode();
+    LCD_clearScreen();
+    LCD_disString(0,2,"Fc1:");
+    LCD_disString(0,3,"Fc2:");
+    LCD_disString(3,2,Fc_1);
+    LCD_disString(3,3,Fc_2);
+    LCD_disString(7,2,"Hz");
+    LCD_disString(7,3,"Hz");
+}
 void showCurve(int mode)
 {
     switch(mode)
@@ -743,8 +781,8 @@ void ScanOutput(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
-    unsigned char displayCurrFreq_char[6] = {'0','0','0','0','0','0'};
-    unsigned int displayCurrFreq = 0;
+    unsigned char displayCurrFreq_char[7] = {'0','0','0','0','0','0','0'};
+    unsigned long displayCurrFreq = 0;
     unsigned int isExit = 0;
     LCD_clearScreen();
     LCD_disString(0,1,"Scan Step:");
@@ -769,19 +807,20 @@ void ScanOutput(void)
     }while(!isSelected);
     isSelected = 0;
     LCD_clearScreen();
-    while(currFreq < 1000000)
+    while(currFreq <= 1000000)
     {
         LCD_disString(1,2,"Scaning ...");
         setSinOutput(currFreq,4090);
         DELAY_PROCESS_MS(1);
         displayCurrFreq = (float)currFreq;
-        convertFloattoCharArray(displayCurrFreq_char,6,displayCurrFreq,5);
-        LCD_disString(1,3,displayCurrFreq_char);
-        LCD_disString(7,3,"Hz");
+        convertFloattoCharArray(displayCurrFreq_char,7,displayCurrFreq,0);
+        LCD_disString(2,3,displayCurrFreq_char);
+        LCD_disString(5,3,"Hz");
         currFreq += stepFreq;
-        if(Button_S3)
+        if(Button_S4)
         {
             //Button_S3         不需要,作为退出后直接返回程序起始点的判断标志
+            Button_S4 = 0;
             isExit = 1;
             break;
         }
@@ -789,8 +828,8 @@ void ScanOutput(void)
         {
             LCD_clearScreen();
             LCD_disString(2,1,"Stop...");
-            LCD_disString(1,3,displayCurrFreq_char);
-            LCD_disString(7,3,"Hz");
+            LCD_disString(2,3,displayCurrFreq_char);
+            LCD_disString(5,3,"Hz");
             Button_S2 = 0;
             while(Button_S2 != 1);
             LCD_clearScreen();

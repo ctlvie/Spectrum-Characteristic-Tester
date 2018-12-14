@@ -328,6 +328,38 @@ unsigned int globalTime_sec = 0;
 unsigned int globalTime_ms = 0;
 unsigned char TimerBuff[9] = {'0','0',':','0','0','.','0','0','\0'};
 
+
+unsigned long testFitting_Freq = 0;
+void testFitting(void)
+{
+  unsigned long disCurrFreq;
+  unsigned char disCurrFreq_char[7] = {'0','0','0','0','0','0','0'};
+  initLCD();
+  initLCD();
+  initButtons();
+  initBoard();
+  initAD9854();
+  while(1)
+  {
+  if(Button_S1)
+    {
+      Button_S1 = 0;
+      testFitting_Freq += 5000;
+      setSinOutput(testFitting_Freq, 4090);
+      disCurrFreq = (float)testFitting_Freq;
+      convertFloattoCharArray(disCurrFreq_char,7,disCurrFreq,0);
+      DELAY_PROCESS_MS(10);
+      initADC(0);
+      PointResult_I = getCorrectValue(getADCValue());
+      initADC(1);
+      PointResult_Q = getCorrectValue(getADCValue());
+      Calculate_PointFreq();
+      LCD_disString(2,1,disCurrFreq_char);
+      LCD_disString(5,1,"Hz");
+    }
+  }
+}
+
 void testTimer(void)
 {
     initLCD();
@@ -338,13 +370,13 @@ void testTimer(void)
       LCD_disString(0,3,TimerBuff);
     }
 }
-/*
+
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     testTimer();
+     testFitting();
 }
-*/
+
 /*
 void main(void)
 {
@@ -352,7 +384,7 @@ void main(void)
    testKeyboard();
 }
 */
-
+/*
 unsigned int isExittoMenu = 0;
 void main(void)
 {
@@ -390,7 +422,7 @@ start: LCD_BacktoStrMode();
           Button_S2 = 0;
           PointOutput();
         }
-         if(Button_S3)
+         if(Button_S4)
         {
           Button_S3 = 0;
           DELAY_PROCESS_MS(10);
@@ -447,11 +479,15 @@ start: LCD_BacktoStrMode();
                 isSelected = MODE_PHASE;
                 Button_S2 = 0;
               }
+              else if(Button_S4)
+              {
+                Button_S4 = 0;
+                goto start;
+              }
               else
                 isSelected = 0;
             }while(!isSelected);
             showCurve(isSelected);
-            goto start;
           }
         }
         if(Button_S2)
@@ -464,9 +500,9 @@ start: LCD_BacktoStrMode();
           Calculate_PointFreq();
           while(1)
           {
-            if(Button_S3)
+            if(Button_S4)
             {
-              Button_S3 = 0;
+              Button_S4 = 0;
               goto start;
             }
           }
@@ -481,5 +517,5 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
-
+*/
 
