@@ -155,7 +155,7 @@ startInput:
     LCD_disChar(2,3,arrayBuff[1]);
     LCD_disChar(3,3,arrayBuff[2]);
     LCD_disChar(4,3,arrayBuff[3]);
-    LCD_disChar(5,3,"kHz");
+    LCD_disString(5,3,"kHz");
     for(currInputBits = 0; currInputBits <= 3; currInputBits ++)
     {
         LCD_CursorON(currInputBits + 1, 3);
@@ -223,7 +223,7 @@ void testScanFreq(void)
   ScanFreq();
   Calculate_Amp();
   Calculate_Phase();
-  showPhaseCurve();
+  showPhaseCurve(100);
 }
 
 void testScanForever(void)
@@ -400,6 +400,7 @@ void main(void)
 start: LCD_BacktoStrMode();
   LCD_clearScreen();
   int isSelected = 0;
+  unsigned int ScanSize = 100;
   //LCD_BacktoStrMode();
   LCD_disString(1,2,"1.SignalOutput");
   LCD_disString(1,3,"2.Measure"); 
@@ -447,12 +448,13 @@ start: LCD_BacktoStrMode();
           if(Button_S1)
           {
             Button_S1 = 0;
+            ScanSize = 100;
             ScanFreq();
           }
           else
           {
             Button_S3 = 0;
-            CustomScan();
+            ScanSize = CustomScan();
           }
           Calculate_Amp();
           Calculate_Phase();
@@ -497,7 +499,7 @@ start: LCD_BacktoStrMode();
               else
                 isSelected = 0;
             }while(!isSelected);
-            showCurve(isSelected);
+            showCurve(isSelected,ScanSize);
           }
         }
         if(Button_S2)
