@@ -139,7 +139,6 @@ void testButton(void)
 
 int testInputResult = 0;
 uchar arrayBuff[4] = {'0','0','0','0'};
-
 int  inputNum(void)
 {
     uint currInputBits;
@@ -152,13 +151,21 @@ startInput:
     inputNumResult = 0;
     LCD_clearScreen();
     LCD_disString(1,1,"Input:");
-    LCD_disString(1,3,arrayBuff); 
+    LCD_disChar(1,3,arrayBuff[0]);
+    LCD_disChar(2,3,arrayBuff[1]);
+    LCD_disChar(3,3,arrayBuff[2]);
+    LCD_disChar(4,3,arrayBuff[3]);
+    LCD_disChar(5,3,"kHz");
     for(currInputBits = 0; currInputBits <= 3; currInputBits ++)
     {
-        LCD_disString(currInputBits + 1,4,".");
+        LCD_CursorON(currInputBits + 1, 3);
         arrayBuff[currInputBits] = getKeyValue();
-        LCD_disString(1,3,arrayBuff);
+        LCD_disChar(1,3,arrayBuff[0]);
+        LCD_disChar(2,3,arrayBuff[1]);
+        LCD_disChar(3,3,arrayBuff[2]);
+        LCD_disChar(4,3,arrayBuff[3]);
     }
+    LCD_CursorOFF();
     inputNumResult = convertCharArraytoInt(arrayBuff, 4);
     LCD_disString(1,4,"S1:Clear S2:OK");
     while(1)
@@ -374,16 +381,10 @@ void testTimer(void)
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-     testKeyboard();
+     testInput();
 }
 */
-/*
-void main(void)
-{
- 	WDTCTL = WDTPW + WDTHOLD; //关闭看门狗
-   testKeyboard();
-}
-*/
+
 
 unsigned int isExittoMenu = 0;
 void main(void)
