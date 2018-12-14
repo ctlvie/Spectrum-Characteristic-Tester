@@ -192,9 +192,11 @@ void Calculate_PointFreq(void)
     currQ = PointResult_Q;
     temp = (currI * currI) + (currQ * currQ);
     PointAmpResult = 2 * SqrtByNewton(temp);
+    PointAmpResult = DataFitting_Amp(PointAmpResult);
     temp = 0;
     temp = currQ / currI;
     PointPhaseResult = -1 * Arctan(temp);
+    PointPhaseResult = DataFitting_Phase(PointPhaseResult);
     convertFloattoCharArray(AmpValue,8,PointAmpResult,5);
     convertFloattoCharArray(PhaseValue,8,PointPhaseResult,5);
     LCD_clearScreen();
@@ -885,4 +887,14 @@ void Calculate_CutOffFreq(void)
        }
        cutOffFreq2 = 0.0;
    }
+}
+
+float DataFitting_Amp(float inputAmp)
+{
+    return (0.9842 * inputAmp + 0.2028);
+}
+
+float DataFitting_Phase(float inputPhase)
+{
+    return (0.9 * inputPhase + 3.075);
 }

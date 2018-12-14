@@ -51,5 +51,7 @@ void showCurve(int mode);
 float getCorrectValue(float input);
 void ScanOutput(void);
 void PointOutput(void);
+float DataFitting_Amp(float inputAmp);
+float DataFitting_Phase(float inputPhase);
 
 #endif /* PROCESSMODULE_H_ */
