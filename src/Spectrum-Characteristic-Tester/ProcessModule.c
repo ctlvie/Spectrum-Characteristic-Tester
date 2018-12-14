@@ -23,7 +23,7 @@ Date		By			Version		Description
 #include <stdlib.h>
 #include <math.h>
 
-extern int  inputNum(void);
+extern int  inputNum(unsigned int x, unsigned int y, unsigned char *s);
 
 extern unsigned long testCurrFreq;
 extern volatile int Button_S1;
@@ -100,7 +100,7 @@ void PointFreq(void)
     int inputFreqValue = 0;
     int isOutOfRange = 1;
     do{
-        inputFreqValue = inputNum();
+        inputFreqValue = inputNum(1,1,"Input:");
         if(inputFreqValue > 1000)
         {
             LCD_clearScreen();
@@ -125,7 +125,7 @@ void PointOutput(void)
     int inputFreqValue = 0;
     int isOutOfRange = 1;
     do{
-        inputFreqValue = inputNum();
+        inputFreqValue = inputNum(1,1,"Input:");
         if(inputFreqValue > 1000)
         {
             LCD_clearScreen();
@@ -899,4 +899,55 @@ float DataFitting_Amp(float inputAmp)
 float DataFitting_Phase(float inputPhase)
 {
     return (0.9 * inputPhase + 3.075);
+}
+
+void CustomScan(void)
+{
+    unsigned long currFreq = 1000;
+    unsigned long stepFreq = 0;
+    unsigned char currPercent_char[2] = {'0','0'};
+    unsigned int currSchedule = 0;
+    unsigned int amount = 0;
+    unsigned long startFreq = 0;
+    unsigned long endFreq = 0;
+startCustomSetting : LCD_clearScreen();
+    startFreq = (unsigned long)inputNum(1,1,"Start:") * 1000;
+    stepFreq = (unsigned long)inputNum(1,1,"Step:") * 1000;
+    endFreq = (unsigned long)inputNum(1,1,"End:") * 1000;
+
+    if(startFreq < 0 || stepFreq == 0 || endFreq == 0 || stepFreq > endFreq || endFreq > 1200000)
+    {
+        LCD_clearScreen();
+        LCD_disString(1,2,"Scope Error!");
+        DELAY_PROCESS_MS(200);
+        goto startCustomSetting;
+    }
+    amount = (endFreq - startFreq) / stepFreq ;
+    if(amount > 100)
+    {
+        LCD_clearScreen();
+        LCD_disString(1,2,"Cannot more than 100 points!");
+        DELAY_PROCESS_MS(200);
+        goto startCustomSetting;
+    }
+
+    LCD_clearScreen();
+    currFreq = startFreq;
+    LCD_disString(1,1,"Scaning...");
+    startTimer();
+    while(currFreq < endFreq)
+    {
+        setSinOutput(currFreq,4090);
+        DELAY_PROCESS_MS(10);
+        initADC(0);
+        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
+        initADC(1);
+        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
+        LCD_disString(2,4,TimerBuff);
+        currFreq += stepFreq;
+        currSchedule++;
+    }
+    LCD_clearScreen();
+    LCD_disString(1,2,"Scan Finish!");
+    stopTimer();
 }

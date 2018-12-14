@@ -53,5 +53,6 @@ void ScanOutput(void);
 void PointOutput(void);
 float DataFitting_Amp(float inputAmp);
 float DataFitting_Phase(float inputPhase);
+void CustomScan(void);
 
 #endif /* PROCESSMODULE_H_ */

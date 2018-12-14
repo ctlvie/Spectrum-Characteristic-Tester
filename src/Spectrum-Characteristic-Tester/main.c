@@ -139,7 +139,7 @@ void testButton(void)
 
 int testInputResult = 0;
 uchar arrayBuff[4] = {'0','0','0','0'};
-int  inputNum(void)
+int  inputNum(unsigned int x, unsigned int y, unsigned char *s)
 {
     uint currInputBits;
     int inputNumResult;
@@ -150,7 +150,7 @@ startInput:
     currInputBits = 0;
     inputNumResult = 0;
     LCD_clearScreen();
-    LCD_disString(1,1,"Input:");
+    LCD_disString(x,y,s);
     LCD_disChar(1,3,arrayBuff[0]);
     LCD_disChar(2,3,arrayBuff[1]);
     LCD_disChar(3,3,arrayBuff[2]);
@@ -193,7 +193,7 @@ void testInput(void)
   initLCD();
   initButtons();
   testInputResult = 0;
-  testInputResult = inputNum();
+  testInputResult = inputNum(1,1,"Input:");
   LCD_clearScreen();
   convertInttoCharArray(testInputBuff,testInputResult,4);
   LCD_disString(1,1,arrayBuff);
@@ -438,13 +438,22 @@ start: LCD_BacktoStrMode();
       LCD_disString(1,1,"Spectrum: ");
       LCD_disString(1,2,"1.Scan");
       LCD_disString(1,3,"2.Point");
+      LCD_disString(1,4,"3.Costom Scan");
       while(1)
       {
-        if(Button_S1)
+        if(Button_S1 == 1 || Button_S3 == 1)
         {
-          Button_S1 = 0;
           LCD_clearScreen();
-          ScanFreq();
+          if(Button_S1)
+          {
+            Button_S1 = 0;
+            ScanFreq();
+          }
+          else
+          {
+            Button_S3 = 0;
+            CustomScan();
+          }
           Calculate_Amp();
           Calculate_Phase();
           while(1)
