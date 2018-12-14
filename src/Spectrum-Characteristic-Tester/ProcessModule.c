@@ -140,8 +140,8 @@ void PointOutput(void)
     setSinOutput(tempFreq, 4090);
     while(1)
     {
-        LCD_disString(0,4,"Press S3 to Exit!");
-        if(Button_S3)
+        LCD_disString(0,4,"Press S4 to Exit!");
+        if(Button_S4)
         {
             break;
         }
@@ -161,6 +161,7 @@ void Calculate_Amp(void)
         currQ = ScanResult_Q[i];
         temp = (currI * currI) + (currQ * currQ);
         ScanAmpResult[i] = 2 * SqrtByNewton(temp);
+        ScanAmpResult[i] = DataFitting_Amp(ScanAmpResult[i]);
     }
 }
 
@@ -177,6 +178,7 @@ void Calculate_Phase(void)
         currQ = ScanResult_Q[i];
         temp = currQ / currI;
         ScanPhaseResult[i] = -1 * Arctan(temp);
+        ScanPhaseResult[i] = DataFitting_Phase(ScanPhaseResult[i]);
     }
 }
 

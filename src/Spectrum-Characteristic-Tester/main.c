@@ -370,13 +370,13 @@ void testTimer(void)
       LCD_disString(0,3,TimerBuff);
     }
 }
-
+/*
 void main(void)
 {
      WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     testFitting();
+     testKeyboard();
 }
-
+*/
 /*
 void main(void)
 {
@@ -384,7 +384,7 @@ void main(void)
    testKeyboard();
 }
 */
-/*
+
 unsigned int isExittoMenu = 0;
 void main(void)
 {
@@ -424,7 +424,7 @@ start: LCD_BacktoStrMode();
         }
          if(Button_S4)
         {
-          Button_S3 = 0;
+          Button_S4 = 0;
           DELAY_PROCESS_MS(10);
           goto start;
         } 
@@ -517,4 +517,4 @@ start: LCD_BacktoStrMode();
     }
   } 
 }
-*/
+

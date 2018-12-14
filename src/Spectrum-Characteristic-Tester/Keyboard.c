@@ -15,6 +15,7 @@ Date		By			Version		Description
 #include<msp430f5529.h>
 int keylock = 0;
 int key_buff;   //存储上一次按下的键值
+int KeyExpired = 99;
 int flag = 0;
 uchar key;      //存储实时的按键信息, 无键按下时为 0
 int NullCnt = 0;        //记录没有键按下的查询次数
@@ -176,6 +177,7 @@ uchar getKeyCdnt(void) {
   uchar KeyCdnt;
   NullCnt = 0;
   //查询到一定次数的键盘为空 
+  /*
   do {
     KeyCdnt = keyScan();
     if(KeyCdnt == 0) {
@@ -185,10 +187,12 @@ uchar getKeyCdnt(void) {
       NullCnt = 0;
     }
   }while(NullCnt < PARA_WAITFORBUTTON);
+  */
   //允许按键按下，之后只要有按键为非零值即可认为是正常操作
   do {
     KeyCdnt = keyScan();
-  }while(KeyCdnt == 0);
+  }while(KeyCdnt == 0 || KeyCdnt == KeyExpired);
+  KeyExpired = KeyCdnt;
   ButtonDownCnt ++;
   return KeyCdnt;
 }
@@ -199,6 +203,7 @@ uchar getKeyCdnt(void) {
 //Input:        无
 //Output:       有效范围内的键值 
 //------------------------------------------------- 
+
 uchar getKeyValue(void) {
   uchar KeyValue;
   do {
@@ -216,3 +221,4 @@ uchar getKeyValue(void) {
   else if (KeyValue == 33) return '9';
   else return '0';
 }
+
