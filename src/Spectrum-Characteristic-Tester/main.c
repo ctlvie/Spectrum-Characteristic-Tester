@@ -201,32 +201,32 @@ void testInput(void)
 
 unsigned long testCurrFreq;
 
-float ScanResult_I[SCAN_SIZE];
-float ScanResult_Q[SCAN_SIZE];
-float ScanAmpResult[SCAN_SIZE];
-float ScanAmpResult_dB[SCAN_SIZE];
-float ScanPhaseResult[SCAN_SIZE];
-float PointResult_I;
-float PointResult_Q;
-float PointAmpResult;
-float PointPhaseResult;
+float SweepResult_I[SCAN_SIZE];
+float SweepResult_Q[SCAN_SIZE];
+float SweepAmpResult[SCAN_SIZE];
+float SweepAmpResult_dB[SCAN_SIZE];
+float SweepPhaseResult[SCAN_SIZE];
+float DotResult_I;
+float DotResult_Q;
+float DotAmpResult;
+float DotPhaseResult;
 volatile float x_Scale;
 volatile float y_Scale;
 
 
-void testScanFreq(void)
+void testSweepFreq(void)
 {
   initAD9854();
   initADC(0);
   initLCD();
   initButtons();
-  ScanFreq();
+  SweepFreq();
   Calculate_Amp();
   Calculate_Phase();
   showPhaseCurve(100);
 }
 
-void testScanForever(void)
+void testSweepForever(void)
 {
   initAD9854();
   initADC(0);
@@ -249,12 +249,12 @@ void testScanForever(void)
         DELAY_PROCESS_MS(1);
         testCurrFreq = currFreq;
         initADC(0);
-        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_I[currSchedule] = getCorrectValue(getADCValue());
         ADCResult0 = getADCValue();
         convertFloattoCharArray(TEST_ADCValue0,8,ADCResult0,5);
         LCD_disString(1,1,TEST_ADCValue0);
         initADC(1);
-        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_Q[currSchedule] = getCorrectValue(getADCValue());
         ADCResult1 = getADCValue();
         convertFloattoCharArray(TEST_ADCValue1,8,ADCResult1,5);
         LCD_disString(1,2,TEST_ADCValue1);
@@ -277,14 +277,14 @@ void testScanForever(void)
   }
 }
 
-void testPointFreq(void)
+void testDotFreq(void)
 {
   initAD9854();
   initADC(0);
   initLCD();
   initButtons();
-  PointFreq();
-  Calculate_PointFreq();
+  DotFreq();
+  Calculate_DotFreq();
 }
 
 void testSpecificFreq(unsigned long specificFreq)
@@ -315,7 +315,7 @@ void testCutOffFreq(void)
   initADC(0);
   initLCD();
   initButtons();
-  ScanFreq();
+  SweepFreq();
   Calculate_Amp();
   Calculate_Phase();
   Calculate_CutOffFreq();
@@ -357,10 +357,10 @@ void testFitting(void)
       convertFloattoCharArray(disCurrFreq_char,7,disCurrFreq,0);
       DELAY_PROCESS_MS(10);
       initADC(0);
-      PointResult_I = getCorrectValue(getADCValue());
+      DotResult_I = getCorrectValue(getADCValue());
       initADC(1);
-      PointResult_Q = getCorrectValue(getADCValue());
-      Calculate_PointFreq();
+      DotResult_Q = getCorrectValue(getADCValue());
+      Calculate_DotFreq();
       LCD_disString(2,1,disCurrFreq_char);
       LCD_disString(5,1,"Hz");
     }
@@ -402,8 +402,8 @@ start: LCD_BacktoStrMode();
   int isSelected = 0;
   unsigned int ScanSize = 100;
   //LCD_BacktoStrMode();
-  LCD_disString(1,2,"1.SignalOutput");
-  LCD_disString(1,3,"2.Measure"); 
+  LCD_disString(0,2,"1.Generation");
+  LCD_disString(0,3,"2.Measurement"); 
   while(1)
   {
     if(Button_S1)
@@ -412,17 +412,17 @@ start: LCD_BacktoStrMode();
       LCD_clearScreen();
       while(1)
       {
-        LCD_disString(1,2,"1.Scan Output");
-        LCD_disString(1,3,"2.Point Output");
+        LCD_disString(1,2,"1.Sweep Output");
+        LCD_disString(1,3,"2.Dot Output");
         if(Button_S1)
         {
           Button_S1 = 0;
-          ScanOutput();
+          SweepOutput();
         }
         if(Button_S2)
         {
           Button_S2 = 0;
-          PointOutput();
+          DotOutput();
         }
          if(Button_S4)
         {
@@ -437,9 +437,9 @@ start: LCD_BacktoStrMode();
       Button_S2 = 0;
       LCD_clearScreen();
       LCD_disString(1,1,"Spectrum: ");
-      LCD_disString(1,2,"1.Scan");
-      LCD_disString(1,3,"2.Point");
-      LCD_disString(1,4,"3.Costom Scan");
+      LCD_disString(1,2,"1.Sweep");
+      LCD_disString(1,3,"2.Dot");
+      LCD_disString(1,4,"3.Costom Sweep");
       while(1)
       {
         if(Button_S1 == 1 || Button_S3 == 1)
@@ -450,13 +450,13 @@ start: LCD_BacktoStrMode();
             Button_S1 = 0;
             ScanSize = 100;
             x_Scale = 50;
-            ScanFreq();
+            SweepFreq();
           }
           else
           {
             Button_S3 = 0;
             x_Scale = 0;
-            ScanSize = CustomScan();
+            ScanSize = CustomSweep();
           }
           Calculate_Amp();
           Calculate_Phase();
@@ -508,10 +508,10 @@ start: LCD_BacktoStrMode();
         {
           Button_S2 = 0;
           LCD_clearScreen();
-          LCD_disString(1,2,"Point Method");
+          LCD_disString(1,2,"Dot Method");
           DELAY_PROCESS_MS(100);
-          PointFreq();
-          Calculate_PointFreq();
+          DotFreq();
+          Calculate_DotFreq();
           while(1)
           {
             if(Button_S4)
@@ -526,7 +526,7 @@ start: LCD_BacktoStrMode();
     if(Button_S3)
     {
       Button_S3 = 0;
-      testScanForever();
+      testSweepForever();
       goto start;
     }
   } 

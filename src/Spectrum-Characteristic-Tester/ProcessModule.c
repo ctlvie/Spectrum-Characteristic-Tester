@@ -32,15 +32,15 @@ extern volatile int Button_S3;
 extern volatile int Button_S4;
 extern volatile float cutOffFreq1;
 extern volatile float cutOffFreq2;
-extern float ScanResult_I[SCAN_SIZE];
-extern float ScanResult_Q[SCAN_SIZE];
-extern float ScanAmpResult[SCAN_SIZE];
-extern float ScanAmpResult_dB[SCAN_SIZE];
-extern float ScanPhaseResult[SCAN_SIZE];
-extern float PointResult_I;
-extern float PointResult_Q;
-extern float PointAmpResult;
-extern float PointPhaseResult;
+extern float SweepResult_I[SCAN_SIZE];
+extern float SweepResult_Q[SCAN_SIZE];
+extern float SweepAmpResult[SCAN_SIZE];
+extern float SweepAmpResult_dB[SCAN_SIZE];
+extern float SweepPhaseResult[SCAN_SIZE];
+extern float DotResult_I;
+extern float DotResult_Q;
+extern float DotAmpResult;
+extern float DotPhaseResult;
 extern volatile float x_Scale;
 extern volatile float y_Scale;
 extern volatile float test;
@@ -54,7 +54,7 @@ float getCorrectValue(float input)
     //return input;
 }
 
-void ScanFreq(void)
+void SweepFreq(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
@@ -70,9 +70,9 @@ void ScanFreq(void)
         DELAY_PROCESS_MS(10);
         testCurrFreq = currFreq;
         initADC(0);
-        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_I[currSchedule] = getCorrectValue(getADCValue());
         initADC(1);
-        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_Q[currSchedule] = getCorrectValue(getADCValue());
 
         convertInttoCharArray(currPercent_char,currSchedule,2);
         LCD_disString(3,3,currPercent_char);
@@ -95,7 +95,7 @@ void ScanFreq(void)
 }
 
 extern unsigned long test1;
-void PointFreq(void)
+void DotFreq(void)
 {
     int inputFreqValue = 0;
     int isOutOfRange = 1;
@@ -115,12 +115,12 @@ void PointFreq(void)
     setSinOutput(tempFreq, 4090);
     DELAY_PROCESS_MS(10);
     initADC(0);
-    PointResult_I = getCorrectValue(getADCValue());
+    DotResult_I = getCorrectValue(getADCValue());
     initADC(1);
-    PointResult_Q = getCorrectValue(getADCValue());
+    DotResult_Q = getCorrectValue(getADCValue());
 }
 
-void PointOutput(void)
+void DotOutput(void)
 {
     int inputFreqValue = 0;
     int isOutOfRange = 1;
@@ -157,11 +157,11 @@ void Calculate_Amp(void)
     LCD_disString(1,2,"Calculating...");
     for(i = 0; i < SCAN_SIZE; i++)
     {
-        currI = ScanResult_I[i];
-        currQ = ScanResult_Q[i];
+        currI = SweepResult_I[i];
+        currQ = SweepResult_Q[i];
         temp = (currI * currI) + (currQ * currQ);
-        ScanAmpResult[i] = 2 * SqrtByNewton(temp);
-        ScanAmpResult[i] = DataFitting_Amp(ScanAmpResult[i]);
+        SweepAmpResult[i] = 2 * SqrtByNewton(temp);
+        SweepAmpResult[i] = DataFitting_Amp(SweepAmpResult[i]);
     }
 }
 
@@ -174,15 +174,15 @@ void Calculate_Phase(void)
     LCD_disString(1,2,"Calculating...");
     for(i = 0; i < SCAN_SIZE; i++)
     {
-        currI = ScanResult_I[i];
-        currQ = ScanResult_Q[i];
+        currI = SweepResult_I[i];
+        currQ = SweepResult_Q[i];
         temp = currQ / currI;
-        ScanPhaseResult[i] = -1 * Arctan(temp);
-        ScanPhaseResult[i] = DataFitting_Phase(ScanPhaseResult[i]);
+        SweepPhaseResult[i] = -1 * Arctan(temp);
+        SweepPhaseResult[i] = DataFitting_Phase(SweepPhaseResult[i]);
     }
 }
 
-void Calculate_PointFreq(void)
+void Calculate_DotFreq(void)
 {
     float currI, currQ;
     float temp = 0;
@@ -190,17 +190,17 @@ void Calculate_PointFreq(void)
     unsigned char PhaseValue[8];
     LCD_clearScreen();
     LCD_disString(1,2,"Calculating...");
-    currI = PointResult_I;
-    currQ = PointResult_Q;
+    currI = DotResult_I;
+    currQ = DotResult_Q;
     temp = (currI * currI) + (currQ * currQ);
-    PointAmpResult = 2 * SqrtByNewton(temp);
-    PointAmpResult = DataFitting_Amp(PointAmpResult);
+    DotAmpResult = 2 * SqrtByNewton(temp);
+    DotAmpResult = DataFitting_Amp(DotAmpResult);
     temp = 0;
     temp = currQ / currI;
-    PointPhaseResult = -1 * Arctan(temp);
-    PointPhaseResult = DataFitting_Phase(PointPhaseResult);
-    convertFloattoCharArray(AmpValue,8,PointAmpResult,5);
-    convertFloattoCharArray(PhaseValue,8,PointPhaseResult,5);
+    DotPhaseResult = -1 * Arctan(temp);
+    DotPhaseResult = DataFitting_Phase(DotPhaseResult);
+    convertFloattoCharArray(AmpValue,8,DotAmpResult,5);
+    convertFloattoCharArray(PhaseValue,8,DotPhaseResult,5);
     LCD_clearScreen();
     LCD_disString(1,2,AmpValue);
     LCD_disString(1,3,PhaseValue);
@@ -318,7 +318,7 @@ void showAmpCurve_Linear(unsigned int ScanSize)
     drawAmpCordinate_Linear();
     //find the maximum number of the results
     int i = 0;
-    float currMax = ScanAmpResult[0];
+    float currMax = SweepAmpResult[0];
     //int intTempResult = 0;
     float y_Scale_Single = 0;
     int x_GraphPos1 = 0;
@@ -329,8 +329,8 @@ void showAmpCurve_Linear(unsigned int ScanSize)
     int startIndex = 0;
     for(i = 0; i < ScanSize ; i++)
     {
-        if(ScanAmpResult[i] > currMax)
-            currMax = ScanAmpResult[i];
+        if(SweepAmpResult[i] > currMax)
+            currMax = SweepAmpResult[i];
     }
     //intTempResult = (int)currMax;
     //currMax = (float)intTempResult + 1;
@@ -341,7 +341,7 @@ void showAmpCurve_Linear(unsigned int ScanSize)
     for(i = 0 ; i < ScanSize ; i++)
     {
         x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)(ScanAmpResult[i] / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)(SweepAmpResult[i] / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
@@ -394,7 +394,7 @@ void showAmpCurve_Linear(unsigned int ScanSize)
                 for(i = startIndex; (i - startIndex) * zoom < X_LENGTH ; i++)
                 {
                     x_GraphPos2 = (i - startIndex) * zoom;
-                    y_GraphPos2 = convertCord_Y((int)(ScanAmpResult[i] / y_Scale_Single));
+                    y_GraphPos2 = convertCord_Y((int)(SweepAmpResult[i] / y_Scale_Single));
                     LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
                     x_GraphPos1 = x_GraphPos2;
                     y_GraphPos1 = y_GraphPos2;
@@ -458,7 +458,7 @@ void showAmpCurve_dB(unsigned int ScanSize)
     LCD_disString(1,2,"Drawing...");
     int i;
     for(i = 0; i < ScanSize ; i++)
-        ScanAmpResult_dB[i] = 20 * (float)log10((double)ScanAmpResult[i]);
+        SweepAmpResult_dB[i] = 20 * (float)log10((double)SweepAmpResult[i]);
     float currMax = -100000;
     float currMin = 100000;
     float y_Scale_Single = 0;
@@ -471,13 +471,13 @@ void showAmpCurve_dB(unsigned int ScanSize)
     int startIndex = 0;
     for(i = 0; i < ScanSize ; i++)
     {
-        if(ScanAmpResult_dB[i] > currMax)
+        if(SweepAmpResult_dB[i] > currMax)
         {
-            currMax = ScanAmpResult_dB[i];
+            currMax = SweepAmpResult_dB[i];
         }
-        if(ScanAmpResult_dB[i] < currMin)
+        if(SweepAmpResult_dB[i] < currMin)
         {
-            currMin = ScanAmpResult_dB[i];
+            currMin = SweepAmpResult_dB[i];
         }
     }
     if(currMax < 0 )
@@ -492,7 +492,7 @@ void showAmpCurve_dB(unsigned int ScanSize)
     for(i = 0 ; i < ScanSize ; i++)
     {
         x_GraphPos2 = i; 
-        y_GraphPos2 = convertCord_Y((int)((ScanAmpResult_dB[i] - currMin) / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)((SweepAmpResult_dB[i] - currMin) / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
@@ -544,7 +544,7 @@ void showAmpCurve_dB(unsigned int ScanSize)
                 for(i = startIndex; (i - startIndex) * zoom < X_LENGTH ; i++)
                 {
                     x_GraphPos2 = (i - startIndex) * zoom;
-                    y_GraphPos2 = convertCord_Y((int)((ScanAmpResult_dB[i] - currMin) / y_Scale_Single));
+                    y_GraphPos2 = convertCord_Y((int)((SweepAmpResult_dB[i] - currMin) / y_Scale_Single));
                     LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
                     x_GraphPos1 = x_GraphPos2;
                     y_GraphPos1 = y_GraphPos2;
@@ -618,7 +618,7 @@ void showPhaseCurve(unsigned int ScanSize)
     for(i = 0; i < ScanSize; i++)
     {
         x_GraphPos2 = i;
-        y_GraphPos2 = convertCord_Y((int)((ScanPhaseResult[i] + 180) / y_Scale_Single));
+        y_GraphPos2 = convertCord_Y((int)((SweepPhaseResult[i] + 180) / y_Scale_Single));
         LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
         x_GraphPos1 = x_GraphPos2;
         y_GraphPos1 = y_GraphPos2;
@@ -657,7 +657,7 @@ void showPhaseCurve(unsigned int ScanSize)
                 for(i = startIndex; (i - startIndex) * zoom < X_LENGTH ; i++)
                 {
                     x_GraphPos2 = (i - startIndex) * zoom;
-                    y_GraphPos2 = convertCord_Y((int)((ScanPhaseResult[i] + 180) / y_Scale_Single));
+                    y_GraphPos2 = convertCord_Y((int)((SweepPhaseResult[i] + 180) / y_Scale_Single));
                     LCD_drawLine(x_GraphPos1 + X_START, y_GraphPos1, x_GraphPos2 + X_START, y_GraphPos2, 1);
                     x_GraphPos1 = x_GraphPos2;
                     y_GraphPos1 = y_GraphPos2;
@@ -770,7 +770,7 @@ void showCurve(int mode, unsigned int ScanSize)
 
 
 
-void ScanOutput(void)
+void SweepOutput(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
@@ -778,7 +778,7 @@ void ScanOutput(void)
     unsigned long displayCurrFreq = 0;
     unsigned int isExit = 0;
     LCD_clearScreen();
-    LCD_disString(0,1,"Scan Step:");
+    LCD_disString(0,1,"Sweep Step:");
     LCD_disString(0,2,"1. 10Hz");
     LCD_disString(0,3,"2. 1kHz");
     int isSelected = 0;
@@ -842,22 +842,22 @@ void Calculate_CutOffFreq(void)
     volatile int i;
     volatile int indexOfMax;
     volatile float cutOffValue = 0;
-    volatile float currMax = ScanAmpResult[0];
+    volatile float currMax = SweepAmpResult[0];
     volatile float num1 = 0;
     volatile float num2 = 0;
     for(i = 0; i < SCAN_SIZE; i ++)
     {
-        if(ScanAmpResult[i] > currMax)
+        if(SweepAmpResult[i] > currMax)
         {
-            currMax = ScanAmpResult[i];
+            currMax = SweepAmpResult[i];
             indexOfMax = i;
         }
     }
     cutOffValue = 0.707 * currMax;
    for(i = 0; i <= indexOfMax; i++)
    {
-       num1 = ScanAmpResult[i];
-       num2 = ScanAmpResult[i+1];
+       num1 = SweepAmpResult[i];
+       num2 = SweepAmpResult[i+1];
        if((num1 <= cutOffValue) && (num2 >= cutOffValue))
        {
            cutOffFreq1 = (float)i * 10000 + ((cutOffValue - num1) * 10000 / (num2 - num1));
@@ -869,8 +869,8 @@ void Calculate_CutOffFreq(void)
    num2 = 0;
    for(i = indexOfMax; i < SCAN_SIZE - 1; i++)
    {
-       num1 = ScanAmpResult[i];
-       num2 = ScanAmpResult[i+1];
+       num1 = SweepAmpResult[i];
+       num2 = SweepAmpResult[i+1];
        if((num1 >= cutOffValue) && (num2 <= cutOffValue))
        {
            cutOffFreq2 = (float)i * 10000 + ((num1 - cutOffValue) * 10000 / (num1 - num2));
@@ -890,7 +890,7 @@ float DataFitting_Phase(float inputPhase)
     return (0.9 * inputPhase + 3.075);
 }
 
-unsigned int CustomScan(void)
+unsigned int CustomSweep(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
@@ -928,9 +928,9 @@ startCustomSetting : LCD_clearScreen();
         setSinOutput(currFreq,4090);
         DELAY_PROCESS_MS(10);
         initADC(0);
-        ScanResult_I[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_I[currSchedule] = getCorrectValue(getADCValue());
         initADC(1);
-        ScanResult_Q[currSchedule] = getCorrectValue(getADCValue());
+        SweepResult_Q[currSchedule] = getCorrectValue(getADCValue());
         LCD_disString(2,4,TimerBuff);
         currFreq += stepFreq;
         currSchedule++;

@@ -34,10 +34,10 @@ Date		By			Version		Description
 #define MODE_AMP_DB    2
 #define MODE_PHASE     3
 void ScanFreq(void);
-void PointFreq(void);
+void DotFreq(void);
 void Calculate_Amp(void);
 void Calculate_Phase(void);
-void Calculate_PointFreq(void);
+void Calculate_DotFreq(void);
 void Calculate_CutOffFreq(void);
 int convertCord_Y(int inputY);
 void drawAmpCordinate_Linear(void);
@@ -50,7 +50,7 @@ void showInfo_CutOffFreq(void);
 void showCurve(int mode, unsigned int ScanSize);
 float getCorrectValue(float input);
 void ScanOutput(void);
-void PointOutput(void);
+void DotOutput(void);
 float DataFitting_Amp(float inputAmp);
 float DataFitting_Phase(float inputPhase);
 unsigned int CustomScan(void);
