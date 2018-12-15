@@ -64,7 +64,7 @@ void ScanFreq(void)
     LCD_disString(1,1,"Scaning...");
     stepFreq = STEP_FREQ;
     startTimer();
-    while(currFreq < 1000000)
+    while(currFreq <= 1000000)
     {
         setSinOutput(currFreq,4090);
         DELAY_PROCESS_MS(10);
@@ -717,8 +717,6 @@ void showInfo_Unit(int mode, int isZoom)
     LCD_BacktoStrMode();
     unsigned char x_Value[5];
     unsigned char y_Value[5];
-    unsigned char Fc_1[8];
-    unsigned char Fc_2[8];
     if(isZoom)
         x_Scale = x_Scale / 10;
     convertFloattoCharArray(x_Value,5,x_Scale,3);
@@ -731,11 +729,6 @@ void showInfo_Unit(int mode, int isZoom)
     {
         LCD_disString(4,1,"kHz/div");
         LCD_disString(4,2," /div");
-        //Calculate_CutOffFreq();
-        //convertFloattoCharArray(Fc_1,5,cutOffFreq1,3);
-        //convertFloattoCharArray(Fc_2,5,cutOffFreq2,3);
-        //LCD_disString(3,3,Fc_1);
-        //LCD_disString(3,4,Fc_2);
     }
     else if(mode == MODE_AMP_DB)
     {
@@ -889,7 +882,7 @@ void Calculate_CutOffFreq(void)
 
 float DataFitting_Amp(float inputAmp)
 {
-    return (0.9842 * inputAmp + 0.2028);
+    return (1.2828 * inputAmp);
 }
 
 float DataFitting_Phase(float inputPhase)
@@ -901,7 +894,6 @@ unsigned int CustomScan(void)
 {
     unsigned long currFreq = 1000;
     unsigned long stepFreq = 0;
-    unsigned char currPercent_char[2] = {'0','0'};
     unsigned int currSchedule = 0;
     unsigned int amount = 0;
     unsigned long startFreq = 0;
@@ -911,7 +903,7 @@ startCustomSetting : LCD_clearScreen();
     stepFreq = (unsigned long)inputNum(1,1,"Step:") * 1000;
     endFreq = (unsigned long)inputNum(1,1,"End:") * 1000;
 
-    if(startFreq < 0 || stepFreq == 0 || endFreq == 0 || stepFreq > endFreq || endFreq > 1200000)
+    if(stepFreq == 0 || endFreq == 0 || stepFreq > endFreq || endFreq > 1200000)
     {
         LCD_clearScreen();
         LCD_disString(1,2,"Scope Error!");
@@ -931,7 +923,7 @@ startCustomSetting : LCD_clearScreen();
     currFreq = startFreq;
     LCD_disString(1,1,"Scaning...");
     startTimer();
-    while(currFreq < endFreq)
+    while(currFreq <= endFreq)
     {
         setSinOutput(currFreq,4090);
         DELAY_PROCESS_MS(10);
