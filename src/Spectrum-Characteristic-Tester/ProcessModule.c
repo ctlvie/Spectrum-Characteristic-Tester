@@ -41,8 +41,8 @@ extern float PointResult_I;
 extern float PointResult_Q;
 extern float PointAmpResult;
 extern float PointPhaseResult;
-extern float x_Scale;
-extern float y_Scale;
+extern volatile float x_Scale;
+extern volatile float y_Scale;
 extern volatile float test;
 extern unsigned char TimerBuff[8];
 
@@ -336,7 +336,6 @@ void showAmpCurve_Linear(unsigned int ScanSize)
     //currMax = (float)intTempResult + 1;
     y_Scale_Single = currMax / 50 ;
     y_Scale = y_Scale_Single * 5;
-    x_Scale = 5;
 
     i = 0;
     for(i = 0 ; i < ScanSize ; i++)
@@ -487,7 +486,6 @@ void showAmpCurve_dB(unsigned int ScanSize)
     }
     y_Scale_Single = (currMax - currMin) / 60 ;
     y_Scale = y_Scale_Single * 5;
-    x_Scale = 50;
     posOfAxis_X = (unsigned int)convertCord_Y((int)(( 0 - currMin) / y_Scale_Single));
     drawAmpCordinate_dB(posOfAxis_X);
     i = 0;
@@ -609,7 +607,6 @@ void showPhaseCurve(unsigned int ScanSize)
     drawPhaseCordinate();
     int i = 0;
     float y_Scale_Single = 0;
-    x_Scale = 5;
     y_Scale_Single = 360 / Y_LENGTH;
     y_Scale = 5 * y_Scale_Single;
     int x_GraphPos1 = 0;
@@ -723,9 +720,8 @@ void showInfo_Unit(int mode, int isZoom)
     unsigned char Fc_1[8];
     unsigned char Fc_2[8];
     if(isZoom)
-        convertFloattoCharArray(x_Value,5,5.0,3);
-    else
-        convertFloattoCharArray(x_Value,5,50.0,3);
+        x_Scale = x_Scale / 10;
+    convertFloattoCharArray(x_Value,5,x_Scale,3);
     convertFloattoCharArray(y_Value,5,y_Scale,3);
     LCD_disString(0,1,"X:");
     LCD_disString(0,2,"Y:");
@@ -930,7 +926,7 @@ startCustomSetting : LCD_clearScreen();
         DELAY_PROCESS_MS(200);
         goto startCustomSetting;
     }
-
+    x_Scale = (stepFreq / 1000) * 5 ;
     LCD_clearScreen();
     currFreq = startFreq;
     LCD_disString(1,1,"Scaning...");

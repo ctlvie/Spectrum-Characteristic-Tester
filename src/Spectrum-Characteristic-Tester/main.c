@@ -210,8 +210,8 @@ float PointResult_I;
 float PointResult_Q;
 float PointAmpResult;
 float PointPhaseResult;
-float x_Scale;
-float y_Scale;
+volatile float x_Scale;
+volatile float y_Scale;
 
 
 void testScanFreq(void)
@@ -449,11 +449,13 @@ start: LCD_BacktoStrMode();
           {
             Button_S1 = 0;
             ScanSize = 100;
+            x_Scale = 50;
             ScanFreq();
           }
           else
           {
             Button_S3 = 0;
+            x_Scale = 0;
             ScanSize = CustomScan();
           }
           Calculate_Amp();
