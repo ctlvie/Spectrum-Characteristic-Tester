@@ -20,7 +20,10 @@ int flag = 0;
 uchar key;      //存储实时的按键信息, 无键按下时为 0
 int NullCnt = 0;        //记录没有键按下的查询次数
 int ButtonDownCnt = 0;  //记录有按键按下的查询次数
-
+extern volatile int Button_S1;
+extern volatile int Button_S2;
+extern volatile int Button_S3;
+extern volatile int Button_S4;
 
 //-------------------------------------------------
 //Name:         keyScan(void)
@@ -191,8 +194,16 @@ uchar getKeyCdnt(void) {
   //允许按键按下，之后只要有按键为非零值即可认为是正常操作
   do {
     KeyCdnt = keyScan();
+    if(Button_S3)
+    {
+      Button_S3 = 0;
+      KeyCdnt = 55;
+    }
   }while(KeyCdnt == 0 || KeyCdnt == KeyExpired);
-  KeyExpired = KeyCdnt;
+  if(KeyCdnt != 55)
+  {
+      KeyExpired = KeyCdnt;
+  }
   ButtonDownCnt ++;
   return KeyCdnt;
 }
