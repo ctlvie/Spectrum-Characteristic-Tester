@@ -29,6 +29,7 @@ Date		By			Version		Description
 #define Y_LENGTH    60  //Y_DEST - Y_START
 #define Y_MIDDLE    32  //Y_START + (Y_LENGTH / 2)
 
+#define SWEEP_DELAY_PARAM   0
 
 #define MODE_AMP_LN    1
 #define MODE_AMP_DB    2

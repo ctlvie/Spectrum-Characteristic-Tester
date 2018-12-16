@@ -15,7 +15,7 @@ Date		By			Version		Description
 #ifndef GLOBALTIMER_H_
 #define GLOBALTIMER_H_
 
-#define TIMER_PARAM 11200
+#define TIMER_PARAM 10500
 
 void initGlobalTimer(void);
 void startTimer(void);

@@ -67,7 +67,7 @@ void SweepFreq(void)
     while(currFreq <= 1000000)
     {
         setSinOutput(currFreq,4090);
-        DELAY_PROCESS_MS(10);
+        DELAY_PROCESS_MS(SWEEP_DELAY_PARAM);
         testCurrFreq = currFreq;
         initADC(0);
         SweepResult_I[currSchedule] = getCorrectValue(getADCValue());
@@ -926,7 +926,7 @@ startCustomSetting : LCD_clearScreen();
     while(currFreq <= endFreq)
     {
         setSinOutput(currFreq,4090);
-        DELAY_PROCESS_MS(10);
+        DELAY_PROCESS_MS(SWEEP_DELAY_PARAM);
         initADC(0);
         SweepResult_I[currSchedule] = getCorrectValue(getADCValue());
         initADC(1);
