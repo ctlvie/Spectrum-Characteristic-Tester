@@ -200,7 +200,7 @@ uchar getKeyCdnt(void) {
       KeyCdnt = 55;
     }
   }while(KeyCdnt == 0 || KeyCdnt == KeyExpired);
-  if(KeyCdnt != 55)
+  if(KeyCdnt != 55 && KeyCdnt != 99)
   {
       KeyExpired = KeyCdnt;
   }
