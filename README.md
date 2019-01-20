@@ -8,7 +8,7 @@ The spectrum characteristic tester is used to measure and display the frequency 
 
 ## 作品报告
 
-![作品报告](https://github.com/ctlvie/Spectrum-Characteristic-Tester/wiki/%E5%9F%BA%E4%BA%8EMSP430%E7%9A%84%E9%A2%91%E7%8E%87%E7%89%B9%E6%80%A7%E6%B5%8B%E8%AF%95%E4%BB%AA)
+<https://github.com/ctlvie/Spectrum-Characteristic-Tester/wiki/%E5%9F%BA%E4%BA%8EMSP430%E7%9A%84%E9%A2%91%E7%8E%87%E7%89%B9%E6%80%A7%E6%B5%8B%E8%AF%95%E4%BB%AA>
 
 ## 程序清单
 
