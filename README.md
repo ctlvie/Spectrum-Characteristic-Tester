@@ -1,18 +1,36 @@
-# 频谱特性测试仪
+# 基于MSP430的频率特性测试仪
 
-## 试题要求
-### 1. 任务
-设计制作一台频率特性测试仪，用于测量并显示“被测网络”的频率特性。
+## 摘要
 
-### 2. 基本要求
-1. 设计制作“被测网络”，其输入、输出阻抗均为 50Ω，该网络由截止频率10kHz的二阶有源高通滤波器与截止频率100kHz的二阶有源低通滤波器串联而成，两个有源滤波器通带电压增益均为1;
-2. 频率特性测试仪中，“采样调理”电路的输入阻抗50Ω。“扫频信号发生器”输出振幅为1V的正弦电压，其扫频范围1kHz~1MHz，频率步进 10Hz或1kHz可选，输出阻抗50Ω，并可用键盘设定点频输出;
-3. 用“扫频法”测量扫频范围内“被测网络”的幅频 特性，并在LCD上显示幅频特性曲线、截止频率值，测量时间≤10秒
-### 3. 发挥部分
-1. 采用“点频法”测量“被测网络”的电压增益，以数字方式显示被测网络增益与频率，并用示波器标定，测量相对误差≤5%;测量频率由键盘设定;
-2. 用“扫频法”测量扫频范围内“被测网络”的相频特性，并在LCD上显示相频特性曲线，测量时间≤10秒;
-3. 用“点频法”测量“被测网络”的相移，以数字方式显示被测网络的相移与频率，并用示波器标定，测量相对误差≤5%;测量频率由键盘设定;
-### 4. 说明
-* 扫频法是指扫频信号发生器输出等幅线性扫频信号作为被测网络输入，同时对被测网络输出响应信号采样和计算，测得被测网络的频率 特性(网络增益与频率的关系)的方法。点频法是指单频信号输入时逐个测得频率特性的方法；负载调整率SI1=|𝑈o2−𝑈o1|/ Uo1，其 中UO1 为Io=0A 时的输出电压， UO2为IO=2A 时的输出电压;
-* 采用128×64点阵等规格LCD显示幅频特性或相频特性曲线时，应同时显示“增益_频率”或 “相移_频率”的线性刻度(刻度的单位自定)。
-* 被测网络制作在单独供电的独立电路板上，其输入、输出信号分别焊接到BNC插座上;频率特性测试仪输入、输出信号分别焊接到BNC插座上。被测网络与频率特性测试仪之间用两根长度20~30cm、50Ω、BNC接头电缆连接。
+频率特性测试仪用于测量并显示被测网络的频率特性，本设计由一个正交扫频DDS信号源产生两路正交的正弦信号，正弦信号的频率为1kHz～1MHz，且步进频率可调。其中一路正弦信号作为待测网络的激励，待测网络的输出分别与原先的两路正交信号相乘，经过低通滤波器后即可得到直流分量，再经过ADS1115采样并由MSP430F5529计算待测网络的幅值和相频特性曲线。待测网络为截止频率分别为10kHz和100kHz的二阶有源高通和低通滤波器串联而成。
+
+The spectrum characteristic tester is used to measure and display the frequency characteristics of the network under test. This design generates two orthogonal sinusoidal signals from a quadrature swept DDS signal source. The frequency of the sinusoidal signal is 1 kHz to 1 MHz, and the step frequency can be Tune. One of the sinusoidal signals is used as the excitation of the network to be tested. The output of the network to be tested is respectively multiplied by the original two orthogonal signals. After passing through the low-pass filter, the DC component can be obtained, and then sampled by ADS1115 and calculated by MSP430F5529. The amplitude and phase-frequency characteristics of the network. The network to be tested is a series of second-order active high-pass and low-pass filters with cutoff frequencies of 10 kHz and 100 kHz, respectively.
+
+## 作品报告
+
+![作品报告](https://github.com/ctlvie/Spectrum-Characteristic-Tester/wiki/%E5%9F%BA%E4%BA%8EMSP430%E7%9A%84%E9%A2%91%E7%8E%87%E7%89%B9%E6%80%A7%E6%B5%8B%E8%AF%95%E4%BB%AA)
+
+## 程序清单
+
+|文件名   | 功能描述     |
+|-----------|------|
+|main.c  | 主函数     |
+| AD9854.c |DDS模块的驱动 |
+|ADS1115.c|外接ADC模块的驱动|
+|Board.c|MSP430F5529LP板上资源的配置|
+|Button.c|四个按键的配置|
+|FormatConvert.c|数据类型转换|
+|GlobalTimer.c|定时器TimerB(记录测量用时)的配置|
+|KeyBoard.c|外接4*4矩阵键盘的配置|
+|LCD12864.c|液晶屏的驱动|
+|ProcessModule.c|进行数据处理、计算、绘图|
+
+## 系统结构
+
+![系统结构](https://i.loli.net/2019/01/20/5c43d403dfee9.png)
+
+## 实物图
+
+![实物图](https://i.loli.net/2019/01/20/5c43d4616b4e6.jpg)
+
+![曲线图](https://i.loli.net/2019/01/20/5c43d77f66409.jpg)
