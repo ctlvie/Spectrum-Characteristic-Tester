@@ -8,7 +8,8 @@ Description			  :				AD9854 DDSÇý¶¯³ÌÐò
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
-181122		ctlvie		1.0			
+181122		ctlvie		1.0
+181216      ctlvie      2.0         Final Version			
 ========================================================*/
 
 #include<msp430f5529.h>

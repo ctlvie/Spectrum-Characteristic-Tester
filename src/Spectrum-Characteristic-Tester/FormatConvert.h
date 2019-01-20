@@ -3,12 +3,13 @@ Author				  :				ctlvie
 Email Address		  :				ctlvie@gmail.com
 Filename			  :				ADS1115.h
 Date				  :			    2018-11-20
-Description			  :				???????
+Description			  :				格式转换处理
 
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
-181120		ctlvie		1.0			float????
+181120		ctlvie		1.0			功能实现
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 
 #ifndef FORMATCONVERT_H_

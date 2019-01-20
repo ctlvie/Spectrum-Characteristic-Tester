@@ -1,10 +1,16 @@
-/*
- * Board.h
- *
- *  Created on: 2018Äê11ÔÂ26ÈÕ
- *      Author: Admin
- */
+/*=======================================================
+Author				  :				ctlvie
+Email Address		  :				ctlvie@gmail.com
+Filename			  :				Board.c
+Date				  :			    2018-11-24
+Description			  :				MSP430F5529LP ??????????
 
+Modification History:
+Date		By			Version		Description
+----------------------------------------------------------
+181124  	ctlvie		1.0			MSP430F5529LP ??????????
+181216      ctlvie      2.0         Final Version
+========================================================*/
 #ifndef BOARD_H_
 #define BOARD_H_
 

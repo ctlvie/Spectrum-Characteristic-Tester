@@ -9,6 +9,7 @@ Modification History:
 Date        By          Version     Description
 ----------------------------------------------------------
 181114      ctlvie      1.0         基本实现键盘扫描与数字输入
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 
 #ifndef KEYBOARD_H_

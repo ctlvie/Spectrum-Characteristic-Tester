@@ -9,6 +9,7 @@ Modification History:
 Date        By          Version     Description
 ----------------------------------------------------------
 181114      ctlvie      1.0         Initial Version
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 
 #include<msp430f5529.h>
@@ -377,13 +378,7 @@ void testTimer(void)
       LCD_disString(0,3,TimerBuff);
     }
 }
-/*
-void main(void)
-{
-     WDTCTL = WDTPW + WDTHOLD; //πÿ±’ø¥√≈π∑
-     testInput();
-}
-*/
+
 
 
 unsigned int isExittoMenu = 0;

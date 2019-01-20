@@ -9,6 +9,7 @@ Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
 181126		ctlvie		1.0			核心处理运算函数
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 
 #ifndef PROCESSMODULE_H_

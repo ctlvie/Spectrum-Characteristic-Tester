@@ -9,6 +9,7 @@ Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
 181120		ctlvie		1.0			ADS1115单通道转换功能实现
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 #include<msp430f5529.h>
 #include"ADS1115.h"

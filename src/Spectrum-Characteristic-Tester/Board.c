@@ -9,6 +9,7 @@ Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
 181124  	ctlvie		1.0			MSP430F5529LP 初始化和基础定义程序
+181216      ctlvie      2.0         Final Version
 ========================================================*/
 #include<msp430f5529.h>
 #include "Board.h"

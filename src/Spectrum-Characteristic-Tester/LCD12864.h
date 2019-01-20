@@ -8,7 +8,8 @@ Description			  :				12864Òº¾§ÆÁÇý¶¯
 Modification History:
 Date		By			Version		Description
 ----------------------------------------------------------
-181119		ctlvie		1.0			
+181119		ctlvie		1.0	
+181216      ctlvie      2.0         Final Version		
 ========================================================*/
 
 
